@@ -8,13 +8,13 @@
 .cuerpo {
     display: flex;
     flex-direction: column;
-    height: 70vh;
+    height: 75vh;
     overflow-y: scroll;
 }
 
 .bandeja {
     display: flex;
-    gap: 10px;
+    height: auto;
 }
 
 .nombre {
@@ -56,9 +56,6 @@ hr {
     overflow: hidden;
     margin-right: 50px;
 }
-.principal {
-    margin-bottom: 200px;
-}
 
 .barra {
     display: flex;
@@ -71,5 +68,50 @@ hr {
 }
 
 a {
+    display: flex;
     text-decoration: none !important;
+    justify-content: flex-start;
+}
+
+.sala {
+    width: 100%;
+    display: flex;
+    justify-content: center ;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+.sala .conimagecon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 500px) {
+    .sala {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center ;
+        align-items: center;
+        overflow-x: hidden;
+    }
+
+    .sala .conimagecon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sala .room_img {
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    .sala .contextto {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+    }
+
 }

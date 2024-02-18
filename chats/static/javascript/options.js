@@ -6,10 +6,15 @@ document.addEventListener('DOMContentLoaded', function() {
     busqueda.addEventListener('keyup', () => {
         contenedor_salas.innerHTML = `
         <div class="border rounded m-2 p-4 d-flex">
-            <div class="container d-flex">
-                <h3>No hay salas disponibles</h3>
+            <div class="container">
+                <h3>No se encontraron salas</h3>
+                <br>
+                <p>Verifica que el nombre introducido en la búsqueda esté correctamete escrito.</p>
             </div>
         </div>
+        <br>
+        <br>
+        <br>
         `;
 
         if (busqueda.value === '') {
@@ -17,21 +22,22 @@ document.addEventListener('DOMContentLoaded', function() {
             salas.forEach(room => {
                 const imagen = room.querySelector('img').src;
                 const nombre = room.querySelector('h3').textContent;
-                const creador = room.querySelector('h4').textContent;
+                const creador = room.querySelector('p').textContent;
                 const url = room.querySelector('a').href;
                 const public = room.querySelector('h6').textContent;
                 const variable = (public !== '') ? 'Sala pública' : ''
                 contenedor_salas.innerHTML += `
-                <div class="sala border rounded m-2 p-4 d-flex g-4">
-                    <div class="m-2">
+                <div class="sala border rounded r-4 m-1 p-1 d-flex">
+                    <div class="container conimagecon m-2">
                         <img class="room_img" src="${imagen}" alt="">
                     </div>
-                    <div class="container">
+                    <div class="container contextto">
+                        <br>
                         <h3>${nombre}</h3>
                         <h6 style="color: green;">${variable}</h6>
-                        <h4>${creador}</h4>
+                        <p>${creador}</p>
+                        <button style="max-width: 150px; display:flex; justify-content:center;" type="button" class="btn btn-dark"><a style="color: white;" class="m-0 p-1" href="${url}">Ingresar</a></button>
                         <br>
-                        <a href="${url}"><button type="button" class="btn btn-dark"><h4>Ingresar</h4></button></a>
                     </div>
                 </div>
                 `;
@@ -40,23 +46,24 @@ document.addEventListener('DOMContentLoaded', function() {
             salas.forEach(room => {
                 const imagen = room.querySelector('img').src;
                 const nombre = room.querySelector('h3').textContent;
-                const creador = room.querySelector('h4').textContent;
+                const creador = room.querySelector('p').textContent;
+                const url = room.querySelector('a').href;
                 const public = room.querySelector('h6').textContent;
                 const variable = (public !== '') ? 'Sala pública' : ''
-                const url = room.querySelector('a').href;
                 if (room.querySelector('h3').textContent.toLowerCase().includes(busqueda.value.toLowerCase())) {
                     contenedor_salas.innerHTML = '';
                     contenedor_salas.innerHTML += `
-                    <div class="sala border rounded m-2 p-4 d-flex g-4">
-                        <div class="m-2">
+                    <div class="sala border rounded r-4 m-1 p-1 d-flex">
+                        <div class="container conimagecon m-2">
                             <img class="room_img" src="${imagen}" alt="">
                         </div>
-                        <div class="container">
+                        <div class="container contextto">
+                            <br>
                             <h3>${nombre}</h3>
                             <h6 style="color: green;">${variable}</h6>
-                            <h4>${creador}</h4>
+                            <p>${creador}</p>
+                            <button style="max-width: 150px; display:flex; justify-content:center;" type="button" class="btn btn-dark"><a style="color: white;" class="m-0 p-1" href="${url}">Ingresar</a></button>
                             <br>
-                            <a href="${url}"><button type="button" class="btn btn-dark"><h4>Ingresar</h4></button></a>
                         </div>
                     </div>
                     `;

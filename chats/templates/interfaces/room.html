@@ -38,10 +38,12 @@
 </div>
 <hr>
 
-<div class="container d-flex bandeja mt-1">
-    <input type="text" id="mensaje" class="form-control" placeholder="Escribe tu mensaje">
-    <button type="button" id="enviarmensaje" class="btn btn-light"><h4>Enviar</h4></button>
-    <button type="button" id="multimedia" class="btn btn-light"><h4>Multimedia</h4></button>
+<div class="container d-flex bandeja fixed-bottom">
+    <div class="container mb-2 d-flex">
+        <input type="text" id="mensaje" class="form-control m-1" placeholder="Escribe tu mensaje">
+        <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="enviarmensaje" class="btn btn-light"><i class="bi bi-send-fill"></i> Enviar</button>
+        <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="multimedia" class="btn btn-light"><i class="bi bi-folder-fill"></i> Archivo</button>
+    </div>
 </div>
 <br>
 <input type="file" id="file" style="display:none;" />

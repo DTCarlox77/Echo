@@ -4,10 +4,12 @@
 
 {% block content %}
 
-<div class="navbar mt-4 mb-2">
-    <div class="container">
-        <h1 class="col-8">Acceso</h1>
-        <a href="{% url 'rooms' %}"><h3>Volver</h3></a>
+<div class="navbar mt-2">
+    <div class="container d-flex">
+        <h1 class="col-4 m-2">Acceso</h1>
+        <div class="d-flex nav-items">
+            <a href="{% url 'rooms' %}"><h4 class="m-2">Regresar</h4></a>
+        </div>
     </div>
 </div>
 <hr>
@@ -30,7 +32,7 @@
         <p>Para obtener la contraseña de acceso consulte al creador de la sala.</p>
         <div class="container d-flex p-0">
             <input type="password" class="form-control" name="password" placeholder="Contraseña" required>
-            <button type="submit" class="btn btn-primary"><h4>Ingresar</h4></button>
+            <button type="submit" class="btn btn-primary">Ingresar</button>
         </div>
         <br>
 

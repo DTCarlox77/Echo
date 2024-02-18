@@ -12,10 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     websocket.onmessage = (e) => {
         const data = JSON.parse(e.data)
         if (data.message) {
-            const mensajeTipo = data.username === username_dom.textContent ? 'alert-primary' : 'alert-success';
+            const mensajeTipo = data.username === username_dom.textContent ? 'alert-primary' : 'alert-light';
             ventana.innerHTML += `
-                <div class="alert ${mensajeTipo} mt-2">
-                    <h3>${data.username}</h3>
+            <h5>${data.username}</h5>
+                <div class="alert ${mensajeTipo} p-2 pb-0">
                     <p>${data.message}</p>
                 </div>
             `;
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function reiniciar_multimedia() {
         mensaje.value = '';
-        compartir.innerHTML = '<h4>Multimedia</h4>';
+        compartir.innerHTML = '<i class="bi bi-folder-fill"></i> Archivo';
         mensaje.disabled = false;
         multimedia = '';
     }
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         mensaje.value = `Archivo a enviar: ${multimedia.name}`;
-        compartir.innerHTML = '<h4>Cancelar</h4>';
+        compartir.innerHTML = '<i class="bi bi-x-circle-fill"></i> Cancelar';
         mensaje.disabled = true;
     });
 

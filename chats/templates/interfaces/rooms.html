@@ -1,25 +1,33 @@
 {% extends 'layouts/main.html' %}
 
 {% block tittle %}Salas{% endblock %}
+{% load static %}
+
+{% block icon %}{% static 'icons/Rooms.svg' %}{% endblock %}
 
 {% block content %}
 
-{% load static %}
+<style>
+    body {
+        overflow-x: hidden;
+    }
+</style>
 
-<div class="navbar mt-4">
-    <div class="container">
-        <h1 class="col-4">Echo</h1>
-        <a href="{% url 'rooms' %}"><h3>Salas</h3></a>
-        <a href="{% url 'myrooms' %}"><h3>Mis salas</h3></a>
-        <a href="{% url 'create' %}"><h3>Crear sala</h3></a>
-        <a href="{% url 'logout' %}"><h3>Cerrar sesión</h3></a>
+<div class="navbar mt-2">
+    <div class="container d-flex">
+        <h1 class="col-4 m-2">Echo</h1>
+        <div class="d-flex nav-items">
+            <a href="{% url 'rooms' %}"><h4 class="m-2">Todas</h4></a>
+            <a href="{% url 'myrooms' %}"><h4 class="m-2">Perteneciente</h4></a>
+            <a href="{% url 'create' %}"><h4 class="m-2">Crear</h4></a>
+            <a href="{% url 'logout' %}"><h4 class="m-2">Cerrar sesión</h4></a>
+        </div>
     </div>
 </div>
 
 <hr>
 <div class="container">
     <input type="text" id="busqueda" class="form-control" placeholder="Búsqueda de salas">
-
 </div>
 <hr>
 <div class="container principal" id="contenedor_salas">
@@ -29,16 +37,17 @@
 
             {% for room in rooms %}
 
-                <div class="sala border rounded m-2 p-4 d-flex g-4">
-                    <div class="m-2">
+                <div class="sala border rounded r-4 m-1 p-1 d-flex">
+                    <div class="container conimagecon mt-3">
                         <img class="room_img" src="{{ room.imagen }}" alt="">
                     </div>
-                    <div class="container">
+                    <div class="container contextto">
+                        <br>
                         <h3>{{ room.nombre }}</h3>
                         <h6 style="color: green;">{% if not room.password %}Sala pública{% endif %}</h6>
-                        <h4>Creada por: {{ room.creador }}</h4>
+                        <p>Creada por: {{ room.creador }}</p>
+                        <button style="max-width: 150px; display:flex; justify-content:center;" type="button" class="btn btn-dark"><a style="color: white;" class="m-0 p-1" href="{% url 'room' id=room.id %}">Ingresar</a></button>
                         <br>
-                        <a href="{% url 'room' id=room.id %}"><button type="button" class="btn btn-dark"><h4>Ingresar</h4></button></a>
                     </div>
                 </div>
 
@@ -48,16 +57,17 @@
 
             {% for room in rooms %}
 
-                <div class="sala border rounded m-2 p-4 d-flex g-4">
-                    <div class="m-2">
+                <div class="sala border rounded r-4 m-1 p-1 d-flex">
+                    <div class="container conimagecon m-2">
                         <img class="room_img" src="{{ room.sala.imagen }}" alt="">
                     </div>
-                    <div class="container">
+                    <div class="container contextto">
+                        <br>
                         <h3>{{ room.sala.nombre }}</h3>
                         <h6 style="color: green;">{% if not room.sala.password %}Sala pública{% endif %}</h6>
-                        <h4>Creada por: {{ room.sala.creador }}</h4>
+                        <p>Creada por: {{ room.sala.creador }}</p>
+                        <button style="max-width: 150px; display:flex; justify-content:center;" type="button" class="btn btn-dark"><a style="color: white;" class="m-0 p-1" href="{% url 'room' id=room.sala.id %}">Ingresar</a></button>
                         <br>
-                        <a href="{% url 'room' id=room.sala.id %}"><button type="button" class="btn btn-dark"><h4>Ingresar</h4></button></a>
                     </div>
                 </div>
 
@@ -74,10 +84,27 @@
     </div>
 
     {% endif %}
+
+    <br>
+    <nav aria-label="...">
+        <ul class="pagination pagination-lg">
+            <li class="page-item active" aria-current="page">
+                <span class="page-link">1</span>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+        </ul>
+    </nav>
+
 </div>
-<div class="alert alert-primary fixed-bottom m-2">
+<div class="alert alert-primary m-3">
     <p>Has iniciado sesión con el perfil de:</p>
-    <h4>{{ user.username }}</h4>
+    <h5 class="m-0">{{ user.username }}</h5>
+    <br>
+</div>
+<div class="container m-1">
+    <h6>Echo - Desarrollada por DTCarlox77</h6>
+    <p>CS50W - Project 5 (Finnal)</p>
 </div>
 
 <script src="{% static 'javascript/options.js' %}"></script>
