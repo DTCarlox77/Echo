@@ -1,0 +1,90 @@
+{% extends 'layouts/main.html' %}
+{% load static %}
+
+{% block tittle %}Salas{% endblock %}
+
+{% block content %}
+<style>
+    .cuerpo {
+        display: flex;
+        flex-direction: column;
+        height: 540px;
+        overflow-y: scroll;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .bandeja {
+        display: flex;
+        gap: 10px;
+    }
+
+    /*.fondo {
+        background-image: url('https://png.pngtree.com/background/20211215/original/pngtree-cartoon-minimalist-cat-background-picture-image_1458802.jpg');
+        background-position: center;
+    }
+    */
+    .nombre {
+        color: black;
+    }
+
+    hr {
+        margin: 0;
+        padding: 0;
+    }
+    .videos {
+        width: 50%;
+        border-radius: 20px;
+        margin-top: 2%;
+    }
+    ::-webkit-scrollbar {
+        background-color: white;
+    }
+
+</style>
+
+<div class="navbar mt-4 mb-2">
+    <div class="container">
+        <a class="nombre col-8" href="{% url 'edit' id=room.id %}"><h1>{{ room.nombre }}</h1></a>
+        <a href="{% url 'rooms' %}"><h3>Volver</h3></a>
+    </div>
+</div>
+
+<hr>
+<div class="fondo m-0 p-0">
+    <div class="container cuerpo" id="ventana">
+        <div class="alert alert-light mt-2">
+            <div class="container mb-4">
+                <h3>Admin</h3>
+                <img class="card-img-bottom" src="https://c.wallhere.com/photos/4c/ec/1366x768_px_cat_minimalism-527559.png!d" alt="">
+            </div>
+        </div>
+        <div class="alert alert-light mt-2">
+            <div class="container mb-4">
+                <h3>Admin</h3>
+                <video src="{% static 'multimedia/post.mp4' %}" class="videos" controls></video>
+            </div>
+        </div>
+        <div class="alert alert-light mt-2">
+            <div class="container mb-4">
+                <h3>Admin</h3>
+                <video src="{% static 'multimedia/taylor.mp3' %}" controls></video>
+            </div>
+        </div>
+    </div>
+
+</div>
+<hr>
+
+<div class="container d-flex bandeja mt-4">
+    <input type="text" id="mensaje" class="form-control" placeholder="Escribe tu mensaje">
+    <button type="button" id="enviarmensaje" class="btn btn-light"><h4>Enviar</h4></button>
+    <button type="button" id="multimedia" class="btn btn-light"><h4>Multimedia</h4></button>
+</div>
+<input type="file" id="file" style="display:none;" />
+<h1 id="nombre_usuario" style="display: none;">{{ user.username }}</h1>
+
+<script src="{% static 'javascript/socket.js' %}"></script>
+{% endblock %}

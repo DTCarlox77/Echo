@@ -1,0 +1,103 @@
+{% extends 'layouts/main.html' %}
+
+{% block tittle %}Salas{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<style>
+    a {
+        text-decoration: none;
+    }
+
+    .room_img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 50px;
+    }
+    .principal {
+        margin-bottom: 200px;
+    }
+</style>
+
+<div class="navbar mt-4">
+    <div class="container">
+        <h1 class="col-4">Echo</h1>
+        <a href="{% url 'rooms' %}"><h3>Salas</h3></a>
+        <a href="{% url 'myrooms' %}"><h3>Mis salas</h3></a>
+        <a href="{% url 'create' %}"><h3>Crear sala</h3></a>
+        <a href="{% url 'logout' %}"><h3>Cerrar sesión</h3></a>
+    </div>
+</div>
+
+<hr>
+<div class="container">
+    <input type="text" id="busqueda" class="form-control" placeholder="Búsqueda de salas">
+
+</div>
+<hr>
+<div class="container principal" id="contenedor_salas">
+    {% if rooms %}
+
+        {% if public %}
+
+            {% for room in rooms %}
+
+                <div class="sala border rounded m-2 p-4 d-flex g-4">
+                    <div class="m-2">
+                        <img class="room_img" src="{{ room.imagen }}" alt="">
+                    </div>
+                    <div class="container">
+                        <h3>{{ room.nombre }}</h3>
+                        <h6 style="color: green;">{% if not room.password %}Sala pública{% endif %}</h6>
+                        <h4>Creada por: {{ room.creador }}</h4>
+                        <br>
+                        <a href="{% url 'room' id=room.id %}"><button type="button" class="btn btn-dark"><h4>Ingresar</h4></button></a>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            {% for room in rooms %}
+
+                <div class="sala border rounded m-2 p-4 d-flex g-4">
+                    <div class="m-2">
+                        <img class="room_img" src="{{ room.sala.imagen }}" alt="">
+                    </div>
+                    <div class="container">
+                        <h3>{{ room.sala.nombre }}</h3>
+                        <h6 style="color: green;">{% if not room.sala.password %}Sala pública{% endif %}</h6>
+                        <h4>Creada por: {{ room.sala.creador }}</h4>
+                        <br>
+                        <a href="{% url 'room' id=room.sala.id %}"><button type="button" class="btn btn-dark"><h4>Ingresar</h4></button></a>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+    
+    {% else %}
+
+    <div class="border rounded m-2 p-4 d-flex">
+        <div class="container d-flex">
+            <h3>No hay salas disponibles</h3>
+        </div>
+    </div>
+
+    {% endif %}
+</div>
+<div class="alert alert-primary fixed-bottom m-2">
+    <p>Has iniciado sesión con el perfil de:</p>
+    <h4>{{ user.username }}</h4>
+</div>
+
+<script src="{% static 'javascript/options.js' %}"></script>
+    
+{% endblock %}

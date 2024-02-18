@@ -1,0 +1,114 @@
+{% extends 'layouts/main.html' %}
+
+{% block tittle %}Edición de sala{% endblock %}
+
+{% block content %}
+{% load static %}
+<style>
+    a {
+        text-decoration: none;
+    }
+
+    .image {
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+</style>
+
+<div class="navbar mt-4 mb-2">
+    <div class="container">
+        <h1 class="col-8">Configuración de {{ room.nombre }}</h1>
+        <a href="{% url 'room' id=room.id %}"><h3>Volver</h3></a>
+    </div>
+</div>
+<hr>
+<div class="container">
+    <img class="image" src="{{ room.imagen }}" alt="">
+</div>
+<br>
+<div class="container">
+    {% if message %}
+        <div class="alert alert-danger">
+            <h4>{{ message }}</h4>
+        </div>
+    {% endif %}
+    {% if not room.password %}
+        <div class="alert alert-warning">
+            <h4>Esta sala es de acceso público</h4>
+            <p>Tenga en cuenta que cualquier persona será capaz de ingresar, enviar mensajes y leer los mensajes enviados con anterioridad.</p>
+        </div>
+    {% endif %}
+    <form action="{% url 'edit' id=room.id %}" method="post">
+        {% csrf_token %}
+        <label for=""><h5>URL de imagen</h5></label>
+        <br>
+        <input type="text" class="col-8 form-control" placeholder="URL de imagen" name="imagen" value="{{ room.imagen }}">
+        <br>
+        <label for=""><h5>Descripción</h5></label>
+        <textarea class="form-control" name="descripcion" id="" style="resize: none; height: 200px" placeholder="Descripción de la sala (Opcional)">{{ room.descripcion }}</textarea>
+        <br>
+        <label for=""><h5>Clave de acceso</h5></label>
+        <input type="text" class="col-8 form-control" placeholder="Código de sala" name="password" value="{% if room.password %}{{ room.password }}{% endif %}">
+        <br>
+        <div class="">
+            <button type="submit" class="btn btn-primary"><h5>Guardar cambios</h5></button>
+
+        <!-- Button trigger modal -->
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                <h5>Borrar sala</h5>
+            </button>
+        
+        <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmación</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Está seguro que desea eliminar la sala "{{ room.nombre }}"? Esta acción es totalmente IRREVERSIBLE, todos los mensajes y el contenido presente será eliminado.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                            <a href="{% url 'remove' id=room.id %}"><button type="button" class="btn btn-danger">Borrar sala</button></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<br>
+<hr>
+<div class="container mt-4 d-flex">
+    <div class="col-9">
+        <h1>Usuarios en la sala</h1>
+    </div>
+</div>
+<hr>
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col"><h4>Nombre de usuario</h4></th>
+                <th scope="col"><h4>Acción</h4></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for username in users %}
+
+                <tr>
+                    <td><h5 class="m-1">{{ username }}</h5></td>
+                    <td><button class="btn btn-danger"><h5 class="m-1">Expulsar</h5></button></td>
+                </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

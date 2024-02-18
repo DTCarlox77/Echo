@@ -1,0 +1,47 @@
+{% extends 'layouts/main.html' %}
+
+{% block tittle %}Crear sala{% endblock %}
+
+{% block content %}
+<style>
+    a {
+        text-decoration: none;
+    }
+</style>
+
+<div class="navbar mt-4 mb-2">
+    <div class="container">
+        <h1 class="col-8">Crear sala</h1>
+        <a href="{% url 'rooms' %}"><h3>Volver</h3></a>
+    </div>
+</div>
+<hr>
+
+<div class="container">
+    {% if message %}
+        <div class="alert alert-danger">
+            <h4>{{ message }}</h4>
+        </div>
+    {% endif %}
+    <form action="{% url 'create' %}" method="post">
+        {% csrf_token %}
+        <input type="text" class="form-control" name="nombre" id="" placeholder="Nombre de la sala">
+        <br>
+        <input type="text" class="col-8 form-control" placeholder="URL de imagen" name="imagen" value="">
+        <br>
+        <textarea class="form-control" name="descripcion" id="" style="resize: none; height: 200px" placeholder="Descripción de la sala (Opcional)"></textarea>
+        <br>
+
+        <input type="text" class="form-control" placeholder="Código de sala" name="password">
+        <br>
+        <div class="alert alert-warning">
+            <h3>Advertencia</h3>
+            <p>
+            Si no asignas una contraseña a tu sala, esta será de libre acceso.
+            </p>
+        </div>
+        <button type="submit" class="btn btn-primary"><h5>Crear sala</h5></button>
+    </form>
+</div>
+
+{% endblock %}

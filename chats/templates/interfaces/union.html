@@ -1,0 +1,52 @@
+{% extends 'layouts/main.html' %}
+
+{% block tittle %}Unirse a sala{% endblock %}
+
+{% block content %}
+
+<style>
+    a {
+        text-decoration: none;
+    }
+    .image {
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+</style>
+
+<div class="navbar mt-4 mb-2">
+    <div class="container">
+        <h1 class="col-8">Acceso</h1>
+        <a href="{% url 'rooms' %}"><h3>Volver</h3></a>
+    </div>
+</div>
+<hr>
+
+<div class="container">
+    <br>
+    <div class="container">
+        <img class="image" src="{{ room_select.imagen }}" alt="">
+    </div>
+    <br>
+    {% if message %}
+        <div class="alert alert-danger">
+            <h4>{{ message }}</h4>
+        </div>
+    {% endif %}
+    <br>
+    <form action="{% url 'union' id=room_select.id %}" method="post">
+        {% csrf_token %}
+        <h3>Solicitando unión a {{ room_select.nombre }}</h3>
+        <p>Para obtener la contraseña de acceso consulte al creador de la sala.</p>
+        <div class="container d-flex p-0">
+            <input type="password" class="form-control" name="password" placeholder="Contraseña" required>
+            <button type="submit" class="btn btn-primary"><h4>Ingresar</h4></button>
+        </div>
+        <br>
+
+    </form>
+</div>
+
+{% endblock %}

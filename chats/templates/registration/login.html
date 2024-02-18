@@ -1,0 +1,58 @@
+{% extends 'layouts/main.html' %}
+
+{% load static %}
+
+{% block tittle %}Inicio de sesión{% endblock %}
+
+{% block content %}
+
+<style>
+    .barra {
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .image {
+        display: flex;
+        justify-content: center;
+        height: 250px;
+    }
+
+    .image > img {
+        width: 400px;
+        object-fit: cover;
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+
+<div class="container image">
+    <img src="{% static 'icons/Echo.svg' %}" alt="">
+</div>
+<div class="container navbar barra mt-4">
+    <h1>Inicio de sesión</h1>
+</div>
+<hr>
+<div class="container border p-4 rounded">
+    {% if message %}
+        <div class="alert alert-danger">
+            <h4>{{ message }}</h4>
+        </div>
+    {% endif %}
+    <br>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="username" id="" class="form-control" placeholder="Nombre de usuario">
+        <br>
+        <input type="password" name="password" class="form-control" placeholder="Contraseña">
+        <br>
+        <button type="submit" class="btn btn-primary"><h5>Iniciar sesión</h5></button>
+        <br>
+        <br>
+        <a href="{% url 'register' %}">¿No tienes una cuenta?</a>
+    </form>
+</div>
+
+{% endblock %}
