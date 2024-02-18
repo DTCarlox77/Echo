@@ -12,12 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     websocket.onmessage = (e) => {
         const data = JSON.parse(e.data)
         if (data.message) {
-            const mensajeTipo = data.username === username_dom.textContent ? 'alert-primary' : 'alert-light';
+            const mensajeTipo = data.username === username_dom.textContent ? 'alert-info' : 'alert-light';
             ventana.innerHTML += `
-            <h5>${data.username}</h5>
+            <div class=""><h6>${data.username}</h6> <p>${data.fecha}</p></div>
                 <div class="alert ${mensajeTipo} p-2 pb-0">
-                    <p>${data.message}</p>
+                    <p>${data.message}</p>                    
                 </div>
+
             `;
             scrollDown();
         }
@@ -40,7 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     enviar_mensaje.addEventListener('click', () => {
         if(websocket.readyState === WebSocket.OPEN) {
-            websocket.send(JSON.stringify({'message' : mensaje.value}));
+            websocket.send(JSON.stringify({
+                'message' : mensaje.value
+            }));
             reiniciar_multimedia();
             scrollDown();
         } else {

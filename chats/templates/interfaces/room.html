@@ -1,21 +1,25 @@
 {% extends 'layouts/main.html' %}
 {% load static %}
 
-{% block tittle %}Salas{% endblock %}
+{% block tittle %}{{ room.nombre }}{% endblock %}
 
 {% block content %}
 
 <div class="navbar mt-2">
-    <div class="container">
-        <a class="nombre col-8" href="{% url 'edit' id=room.id %}"><h1 class="m-0">{{ room.nombre }}</h1></a>
-        <a href="{% url 'rooms' %}"><h3>Volver</h3></a>
+    <div class="container d-flex">
+        <a class="nombre col-8" href="{% url 'edit' id=room.id %}"><h1 class="col-4 m-2">{{ room.nombre }}</h1></a>
+        <div class="d-flex nav-items">
+            <a href="{% url 'rooms' %}"><h4 class="m-2">Volver</h4></a>
+        </div>
     </div>
 </div>
 
 <hr>
 <div class="fondo m-0 p-0">
     <div class="container cuerpo" id="ventana">
-        <div class="alert alert-light mt-2">
+
+
+        <!-- <div class="alert alert-light mt-2">
             <div class="container mb-4">
                 <h3>Admin</h3>
                 <img class="card-img-bottom" src="https://c.wallhere.com/photos/4c/ec/1366x768_px_cat_minimalism-527559.png!d" alt="">
@@ -32,20 +36,18 @@
                 <h3>Admin</h3>
                 <video src="{% static 'multimedia/taylor.mp3' %}" controls></video>
             </div>
-        </div>
-    </div>
+        </div> -->
 
-</div>
-<hr>
 
-<div class="container d-flex bandeja fixed-bottom">
-    <div class="container mb-2 d-flex">
-        <input type="text" id="mensaje" class="form-control m-1" placeholder="Escribe tu mensaje">
-        <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="enviarmensaje" class="btn btn-light"><i class="bi bi-send-fill"></i> Enviar</button>
-        <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="multimedia" class="btn btn-light"><i class="bi bi-folder-fill"></i> Archivo</button>
     </div>
 </div>
-<br>
+
+<div class="container d-flex fixed-bottom mb-1" style="background-color: white;">
+    <input type="text" id="mensaje" class="form-control m-1" placeholder="Escribe tu mensaje">
+    <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="enviarmensaje" class="btn btn-light"><i class="bi bi-send-fill"></i> Enviar</button>
+    <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="multimedia" class="btn btn-light"><i class="bi bi-folder-fill"></i> Archivo</button>
+</div>
+
 <input type="file" id="file" style="display:none;" />
 <h1 id="nombre_usuario" style="display: none;">{{ user.username }}</h1>
 

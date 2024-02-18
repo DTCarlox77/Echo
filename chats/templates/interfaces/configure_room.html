@@ -4,23 +4,35 @@
 
 {% block content %}
 
-<div class="navbar mt-4 mb-2">
-    <div class="container">
-        <h1 class="col-8">Configuración de {{ room.nombre }}</h1>
-        <a href="{% url 'room' id=room.id %}"><h3>Volver</h3></a>
+<style>
+    .image-edit {
+        width: 80%;
+        max-width: 500px;
+        border-radius: 15px;
+    }
+</style>
+
+<div class="navbar mt-2">
+    <div class="container d-flex">
+        <h1 class="col-4 m-2">Configuración</h1>
+        <div class="d-flex nav-items">
+            <a href="{% url 'room' id=room.id %}"><h4 class="m-2">Volver</h4></a>
+        </div>
     </div>
 </div>
 <hr>
 <div class="container">
-    <img class="image" src="{{ room.imagen }}" alt="">
+    <img class="image-edit" src="{{ room.imagen }}" alt="">
 </div>
 <br>
 <div class="container">
+    <br>
     {% if message %}
         <div class="alert alert-danger">
-            <h4>{{ message }}</h4>
+            <h5>{{ message }}</h5>
         </div>
     {% endif %}
+    <h1>{{ room.nombre }}</h1>
     {% if not room.password %}
         <div class="alert alert-warning">
             <h4>Esta sala es de acceso público</h4>
@@ -29,22 +41,25 @@
     {% endif %}
     <form action="{% url 'edit' id=room.id %}" method="post">
         {% csrf_token %}
-        <label for=""><h5>URL de imagen</h5></label>
+        <br>
+        <h5>URL de imagen</h5>
         <br>
         <input type="text" class="col-8 form-control" placeholder="URL de imagen" name="imagen" value="{{ room.imagen }}">
         <br>
-        <label for=""><h5>Descripción</h5></label>
+        <h5>Descripción</h5>
+        <br>
         <textarea class="form-control" name="descripcion" id="" style="resize: none; height: 200px" placeholder="Descripción de la sala (Opcional)">{{ room.descripcion }}</textarea>
         <br>
-        <label for=""><h5>Clave de acceso</h5></label>
+        <h5>Clave de acceso</h5>
+        <br>
         <input type="text" class="col-8 form-control" placeholder="Código de sala" name="password" value="{% if room.password %}{{ room.password }}{% endif %}">
         <br>
         <div class="">
-            <button type="submit" class="btn btn-primary"><h5>Guardar cambios</h5></button>
+            <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
 
         <!-- Button trigger modal -->
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                <h5>Borrar sala</h5>
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                Borrar sala
             </button>
         
         <!-- Modal -->
@@ -81,16 +96,16 @@
     <table class="table">
         <thead>
             <tr>
-                <th scope="col"><h4>Nombre de usuario</h4></th>
-                <th scope="col"><h4>Acción</h4></th>
+                <th scope="col"><h5>Nombre de usuario</h5></th>
+                <th scope="col"><h5>Acción</h5></th>
             </tr>
         </thead>
         <tbody>
             {% for username in users %}
 
                 <tr>
-                    <td><h5 class="m-1">{{ username }}</h5></td>
-                    <td><button class="btn btn-danger"><h5 class="m-1">Expulsar</h5></button></td>
+                    <td>{{ username }}</td>
+                    <td><button class="btn btn-outline-danger">Expulsar</button></td>
                 </tr>
 
             {% endfor %}

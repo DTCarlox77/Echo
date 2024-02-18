@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from .models import Mensajes, Salas
 from channels.db import database_sync_to_async
+import datetime
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -39,17 +40,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'chat_message',
                     'message': message,
-                    'username': username
+                    'username': username,
                 }
             )
 
     async def chat_message(self, event):
         message = event['message']
         username = event['username']
+        fecha = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
         await self.send(text_data=json.dumps({
             'message': message,
-            'username': username
+            'username': username,
+            'fecha' : fecha
         }))
         
     @database_sync_to_async
@@ -63,9 +66,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             
             await self.send(text_data=json.dumps({
                 'message': mensaje['mensaje'],
-                'username': mensaje['emisor__username']
+                'username': mensaje['emisor__username'],
+                'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S")
             }))
             
     @database_sync_to_async
     def obtener_mensajes(self):
-        return list(Mensajes.objects.filter(sala__id=int(self.room_name)).order_by('fecha').values('mensaje', 'emisor__username'))
+        mensajes = list(Mensajes.objects.filter(sala__id=int(self.room_name)).order_by('fecha').values('mensaje', 'emisor__username', 'fecha'))
+        return mensajes

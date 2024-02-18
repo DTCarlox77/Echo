@@ -10,6 +10,7 @@
     flex-direction: column;
     height: 75vh;
     overflow-y: scroll;
+    margin-bottom: 50px;
 }
 
 .bandeja {
@@ -68,9 +69,7 @@ hr {
 }
 
 a {
-    display: flex;
     text-decoration: none !important;
-    justify-content: flex-start;
 }
 
 .sala {
