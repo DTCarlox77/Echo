@@ -27,9 +27,8 @@ hr {
     padding: 0;
 }
 .videos {
-    width: 50%;
+    width: 100%;
     border-radius: 20px;
-    margin-top: 2%;
 }
 
 ::-webkit-scrollbar {

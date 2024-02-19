@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout, login
+from django.views.decorators.csrf import csrf_exempt
 
-from .models import CustomUser, Salas, SalasUsuarios
+from .models import CustomUser, Salas, SalasUsuarios, Mensajes
 
 def main(request):
     
@@ -243,3 +245,21 @@ def union(request, id):
         'room_select': room_select,
         'message': message
     })
+
+@login_required
+@csrf_exempt
+def mediaroom(request, id):
+    
+    room = get_object_or_404(Salas, id=id)
+    autorizacion = SalasUsuarios.objects.filter(usuario=request.user, sala=room).exists()
+    
+    if autorizacion:
+        if request.method == 'POST':
+            archivo = request.FILES.get('multimedia')
+            
+            if archivo:
+                Mensajes.objects.create(emisor=request.user, sala=room, archivo=archivo)
+
+                return JsonResponse({
+                    'message': 'Archivo agregado exitosamente'
+                })

@@ -13,5 +13,6 @@ urlpatterns = [
     path('edit/<int:id>', views.edit_room, name='edit'), # Configuración de sala
     path('remove/<int:id>', views.remove_room, name='remove'), # Eliminar sala
     path('myrooms/', views.myrooms, name='myrooms'), # Salas en donde se ingresó
-    path('deluser/<int:room_id>/<int:user_id>', views.remove_member, name='deluser') # Eliminar usuario de sala
+    path('deluser/<int:room_id>/<int:user_id>/', views.remove_member, name='deluser'), # Eliminar usuario de sala
+    path('mediaroom/<int:id>/', views.mediaroom, name='mediaroom'), # Para envío de paquetes (Fetch) 
 ]

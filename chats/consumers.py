@@ -49,9 +49,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if text_data:
             text_data_json = json.loads(text_data)
             message = text_data_json.get('message')
+            media = text_data_json.get('media')
             username = self.user.username
             userimage = self.user.image
-                
+            
             # Revisa si el emisor pertenece a la sala.
             validar = await self.validacion_membresia()
 
@@ -65,7 +66,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'message': message,
                         'username': username,
                         'userimage' : userimage,
-                        'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                        'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                        'media' : media
                     }
                 )
                 
@@ -92,7 +94,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'message': format_message,
                             'username': username,
                             'userimage' : userimage,
-                            'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                            'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                            'media' : media
                         }
                     )
                     
@@ -121,6 +124,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = event['username']
         userimage = event['userimage']
         fecha = event['fecha']
+        media = event['media']
         validar = await self.validacion_membresia()
         
         # Revisa que el usuario pertenezca a la sala.
@@ -131,7 +135,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'message': message,
                     'username': username,
                     'userimage' : userimage,
-                    'fecha' : fecha
+                    'fecha' : fecha,
+                    'media' : media
                 },
                 # 'alert' : {
                 #     'message' : 'testing 123 testing'
@@ -140,9 +145,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             
     # Almacena los mensajes en la base de datos.
     @database_sync_to_async
-    def guardar_mensaje(self, message):
+    def guardar_mensaje(self, mensaje=None, archivo=None):
         sala = Salas.objects.get(id=int(self.room_name))
-        Mensajes.objects.create(emisor=self.user, sala=sala, mensaje=message)
+        Mensajes.objects.create(emisor=self.user, sala=sala, mensaje=mensaje, archivo=archivo)
 
     # Carga y envía los mensajes al cliente.
     async def cargar_mensajes_previos(self):
@@ -154,14 +159,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'message': mensaje['mensaje'],
                     'username': mensaje['emisor__username'],
                     'userimage' : mensaje['emisor__image'],
-                    'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S")
+                    'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
+                    'media' : mensaje['archivo']
                 }
             }))
     
     # Carga los mensajes desde la base de datos.
     @database_sync_to_async
     def obtener_mensajes(self):
-        mensajes = list(Mensajes.objects.filter(sala__id=int(self.room_name)).order_by('fecha').values('mensaje', 'emisor__username', 'fecha', 'emisor__image'))
+        mensajes = list(Mensajes.objects.filter(sala__id=int(self.room_name)).order_by('fecha').values('mensaje', 'emisor__username', 'fecha', 'emisor__image', 'archivo'))
         return mensajes
     
     # Valida la relación entre el usuario y el grupo de chats.

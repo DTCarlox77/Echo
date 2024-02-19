@@ -7,6 +7,17 @@
 
 {% block content %}
 
+<style>
+    /* Estilo para el contenedor del reproductor de audio */
+
+/* Estilo para el reproductor de audio */
+audio {
+    width: 100%;
+    outline: none;
+}
+
+</style>
+
 <div class="navbar mt-2">
     <div class="container d-flex">
         <a class="nombre col-8" href="{% url 'edit' id=room.id %}"><h1 class="col-4 m-2">{{ room.nombre }}</h1></a>
@@ -31,14 +42,26 @@
                 <h3>Admin</h3>
                 <video src="{% static 'multimedia/post.mp4' %}" class="videos" controls></video>
             </div>
+        </div>-->
+        <!-- <div class="container-fluid d-flex">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Anonymous_emblem.svg/1024px-Anonymous_emblem.svg.png" class="userimagechat">
+            <div><h6>DTCarlox77</h6> <p>Lunes 30 de mayo</p></div>
         </div>
-        <div class="alert alert-light mt-2">
-            <div class="container mb-4">
-                <h3>Admin</h3>
-                <video src="{% static 'multimedia/taylor.mp3' %}" controls></video>
-            </div>
-        </div> -->
+        <div class="alert alert-info p-2 pb-0">
+            <audio controls>
+                <source src="{% static 'multimedia/taylor.mp3' %}">
+            </audio>                  
+        </div>
 
+        <div class="container-fluid d-flex">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Anonymous_emblem.svg/1024px-Anonymous_emblem.svg.png" class="userimagechat">
+            <div><h6>DTCarlox77</h6> <p>Lunes 30 de mayo</p></div>
+        </div>
+        <div class="alert alert-info p-2 pb-0">
+            <video class="videos" controls>
+                <source src="{% static 'multimedia/post.mp4' %}">
+            </video>                  
+        </div> -->
 
     </div>
 </div>
@@ -49,7 +72,10 @@
     <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="multimedia" class="btn btn-light"><i class="bi bi-folder-fill"></i> Archivo</button>
 </div>
 
-<input type="file" id="file" style="display:none;" />
+<form enctype="multipart/form-data" style="display:none;">
+    <input type="file" id="file" style="display:none;" />
+</form>
+
 <h1 id="nombre_usuario" style="display: none;">{{ user.username }}</h1>
 
 <script src="{% static 'javascript/socket.js' %}"></script>

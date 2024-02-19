@@ -69,6 +69,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 archivo.disabled = true;
                 scrollDown();
             }
+
+            else if (data.message.media) {
+            
+                // // Validación del tipo de archivo según la extensión
+                // if (fileExtension === 'mp4') {
+                //     // Si es un archivo de video (.mp4)
+                //     ventana.innerHTML += `
+                //         <h4>Archivo de Video</h4>
+                //         <video controls>
+                //             <source src="${data.message.media}" type="video/mp4">
+                //             Tu navegador no soporta el elemento de video.
+                //         </video>
+                //     `;
+                // } else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                //     // Si es un archivo de imagen (.jpg, .jpeg, .png, .gif)
+                //     ventana.innerHTML += `
+                //         <h4>Archivo de Imagen</h4>
+                //         <img src="${data.message.media}" alt="Imagen">
+                //     `;
+                // } else {
+                //     // Otros tipos de archivo
+                //     ventana.innerHTML += `
+                //         <h4>Archivo no compatible</h4>
+                //     `;
+                // }
+                scrollDown();
+            }
         }
 
         // if (data.alert) {
@@ -81,12 +108,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function nuevo_mensaje () {
         if (websocket.readyState === WebSocket.OPEN) {
-            websocket.send(JSON.stringify({
-                'message' : mensaje.value
-            }));
+            if (mensaje.value !== '' && !multimedia) {                
+                websocket.send(JSON.stringify({
+                    'message' : mensaje.value
+                }));
+                mensaje.value = '';
 
-            reiniciar_multimedia();
-            scrollDown();
+            } else if (multimedia) {
+                reiniciar_multimedia();
+                scrollDown();
+
+                const media_data = new FormData();
+                media_data.append('multimedia', document.querySelector('#file').files[0]);
+
+                fetch(`/mediaroom/${room_id}/`, {
+                    method: 'POST',
+                    body: media_data
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Acciones que se podrían agregar si el envío multimedia es aceptado.
+                })
+                .catch(error => console.error("Error con la solicitud:", error));
+
+                websocket.send(JSON.stringify({
+                    'message' : mensaje.value,
+                    'media' : media_data
+                }));
+            }
         } else {
             console.error('Conexión websocket no disponible.');
         }
@@ -114,14 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
         multimedia = '';
     }
 
-    compartir.addEventListener('click', () => {
-        if (multimedia !== '') {
-            reiniciar_multimedia();
-        } else {
-            archivo.click();
-        }
-    });
-
     archivo.addEventListener('change', (e) => {
         multimedia = e.target.files[0];
         if (!multimedia) {
@@ -131,6 +172,14 @@ document.addEventListener('DOMContentLoaded', () => {
         mensaje.value = `Archivo a enviar: ${multimedia.name}`;
         compartir.innerHTML = '<i class="bi bi-x-circle-fill"></i> Cancelar';
         mensaje.disabled = true;
+    });
+
+    compartir.addEventListener('click', () => {
+        if (multimedia !== '') {
+            reiniciar_multimedia();
+        } else {
+            archivo.click();
+        }
     });
 
     // Permite a la pantalla de mensajes estar siempre al final.
