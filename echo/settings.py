@@ -135,5 +135,5 @@ AUTH_USER_MODEL = 'chats.CustomUser'
 
 # Redirección de las validaciones de inicio requerido.
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'posts'
+LOGIN_REDIRECT_URL = 'rooms'
 LOGOUT_REDIRECT_URL = 'login'

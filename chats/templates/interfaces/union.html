@@ -1,6 +1,9 @@
 {% extends 'layouts/main.html' %}
 
 {% block tittle %}Unirse a sala{% endblock %}
+{% load static %}
+
+{% block icon %}{% static 'icons/Room.svg' %}{% endblock %}
 
 {% block content %}
 
@@ -22,7 +25,8 @@
     <br>
     {% if message %}
         <div class="alert alert-danger">
-            <h4>{{ message }}</h4>
+            <h5>Error</h5>
+            <p>{{ message }}</p>
         </div>
     {% endif %}
     <br>

@@ -1,12 +1,15 @@
 {% extends 'layouts/main.html' %}
 
 {% block tittle %}Crear sala{% endblock %}
+{% load static %}
+
+{% block icon %}{% static 'icons/Create.svg' %}{% endblock %}
 
 {% block content %}
 
 <div class="navbar mt-2">
     <div class="container d-flex">
-        <h1 class="col-4 m-2">Crear sala</h1>
+        <h1 class="col-5 m-2">Crear sala</h1>
         <div class="d-flex nav-items">
             <a href="{% url 'rooms' %}"><h4 class="m-2">Volver</h4></a>
         </div>
@@ -17,7 +20,8 @@
 <div class="container">
     {% if message %}
         <div class="alert alert-danger">
-            <h4>{{ message }}</h4>
+            <h4>Error: </h4>
+            <p>{{ message }}</p>
         </div>
     {% endif %}
     <form action="{% url 'create' %}" method="post">
@@ -40,5 +44,6 @@
         <button type="submit" class="btn btn-primary">Crear sala</button>
     </form>
 </div>
+<br>
 
 {% endblock %}

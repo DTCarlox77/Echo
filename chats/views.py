@@ -126,7 +126,7 @@ def create_room(request):
             else:
                 message = 'El nombre no se encuentra disponible.'
         else:
-            message = 'La sala necesita de un nombre (Este será inmutable).'
+            message = 'La sala necesita de un nombre.'
     
     return render(request, 'interfaces/create_room.html', {
         'message' : message,
@@ -178,7 +178,13 @@ def remove_room(request, id):
 @login_required
 def remove_member(request, room_id, user_id):
     
-    return redirect('edit')
+    room = get_object_or_404(Salas, id=room_id)
+    
+    if room.creador == request.user:
+        user = get_object_or_404(SalasUsuarios, sala=room_id, usuario=user_id)
+        user.delete()
+    
+    return redirect('edit', id=room_id)
 
 @login_required
 def room(request, id):

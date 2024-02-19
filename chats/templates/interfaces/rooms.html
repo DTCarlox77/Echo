@@ -17,10 +17,10 @@
     <div class="container d-flex">
         <h1 class="col-4 m-2">Echo</h1>
         <div class="d-flex nav-items">
-            <a href="{% url 'rooms' %}"><h4 class="m-2">Todas</h4></a>
-            <a href="{% url 'myrooms' %}"><h4 class="m-2">Perteneciente</h4></a>
             <a href="{% url 'create' %}"><h4 class="m-2">Crear</h4></a>
-            <a href="{% url 'logout' %}"><h4 class="m-2">Cerrar sesión</h4></a>
+            <a href="{% url 'rooms' %}"><h4 class="m-2">Salas</h4></a>
+            <a href="{% url 'myrooms' %}"><h4 class="m-2">Pertenecientes</h4></a>
+            <a href="{% url 'logout' %}"><h4 class="m-2">Salir</h4></a>
         </div>
     </div>
 </div>
@@ -58,7 +58,7 @@
             {% for room in rooms %}
 
                 <div class="sala border rounded r-4 m-1 p-1 d-flex">
-                    <div class="container conimagecon m-2">
+                    <div class="container conimagecon mt-3">
                         <img class="room_img" src="{{ room.sala.imagen }}" alt="">
                     </div>
                     <div class="container contextto">
@@ -78,15 +78,16 @@
     {% else %}
 
     <div class="border rounded m-2 p-4 d-flex">
-        <div class="container d-flex">
+        <div class="container">
             <h3>No hay salas disponibles</h3>
+            <br>
+            <p>Puedes animarte a crear una en la pestaña de "Crear".</p>
         </div>
     </div>
 
     {% endif %}
 
-    <br>
-    <nav aria-label="...">
+    <!-- <nav aria-label="...">
         <ul class="pagination pagination-lg">
             <li class="page-item active" aria-current="page">
                 <span class="page-link">1</span>
@@ -94,7 +95,7 @@
             <li class="page-item"><a class="page-link" href="#">2</a></li>
             <li class="page-item"><a class="page-link" href="#">3</a></li>
         </ul>
-    </nav>
+    </nav> -->
 
 </div>
 <div class="alert alert-primary m-3">

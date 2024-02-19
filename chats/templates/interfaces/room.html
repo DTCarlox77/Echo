@@ -1,7 +1,9 @@
 {% extends 'layouts/main.html' %}
-{% load static %}
 
 {% block tittle %}{{ room.nombre }}{% endblock %}
+{% load static %}
+
+{% block icon %}{% static 'icons/Room.svg' %}{% endblock %}
 
 {% block content %}
 

@@ -1,16 +1,11 @@
 {% extends 'layouts/main.html' %}
 
 {% block tittle %}Edición de sala{% endblock %}
+{% load static %}
+
+{% block icon %}{% static 'icons/Edit.svg' %}{% endblock %}
 
 {% block content %}
-
-<style>
-    .image-edit {
-        width: 80%;
-        max-width: 500px;
-        border-radius: 15px;
-    }
-</style>
 
 <div class="navbar mt-2">
     <div class="container d-flex">
@@ -55,14 +50,11 @@
         <input type="text" class="col-8 form-control" placeholder="Código de sala" name="password" value="{% if room.password %}{{ room.password }}{% endif %}">
         <br>
         <div class="">
-            <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
 
-        <!-- Button trigger modal -->
+            <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
             <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                 Borrar sala
             </button>
-        
-        <!-- Modal -->
             <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -84,8 +76,10 @@
         </div>
     </form>
 </div>
+
 <br>
 <hr>
+
 <div class="container mt-4 d-flex">
     <div class="col-9">
         <h1>Usuarios en la sala</h1>
@@ -105,7 +99,9 @@
 
                 <tr>
                     <td>{{ username }}</td>
-                    <td><button class="btn btn-outline-danger">Expulsar</button></td>
+                    {% if not room.creador == username %}
+                        <td><a href="{% url 'deluser' room_id=room.id user_id=username.id %}"><button class="btn btn-outline-danger">Expulsar</button></a></td>
+                    {% endif %}
                 </tr>
 
             {% endfor %}

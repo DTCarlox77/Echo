@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+    // Filtro de salas como método de búsqueda en las pestañas principales.
     const busqueda = document.getElementById('busqueda');
     const contenedor_salas = document.querySelector('#contenedor_salas');
     const salas = contenedor_salas.querySelectorAll('.sala');
@@ -42,6 +44,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 `;
             }); 
+
+            contenedor_salas.innerHTML += '<br>';
+            
         } else {
             salas.forEach(room => {
                 const imagen = room.querySelector('img').src;
@@ -69,6 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                 }
             });
+
+            contenedor_salas.innerHTML += '<br>';
         }
     });
 });

@@ -114,3 +114,13 @@ a {
     }
 
 }
+
+#contenedor_salas {
+    min-height: 400px;
+}
+
+.image-edit {
+    width: 80%;
+    max-width: 500px;
+    border-radius: 15px;
+}
