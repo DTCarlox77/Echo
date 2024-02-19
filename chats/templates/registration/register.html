@@ -13,7 +13,8 @@
 <div class="container border p-4 rounded">
     {% if message %}
         <div class="alert alert-danger">
-            <h4>{{ message }}</h4>
+            <h4>Error</h4>
+            <p>{{ message }}</p>
         </div>
     {% endif %}
     <br>
@@ -22,6 +23,8 @@
         <input type="text" name="username" id="" class="form-control" placeholder="Nombre de usuario">
         <br>
         <input type="password" name="password" class="form-control" placeholder="Contraseña">
+        <br>
+        <input type="text" name="imagen" id="" class="form-control" placeholder="URL de imagen">
         <br>
         <button type="submit" class="btn btn-primary"><h5>Crear cuenta</h5></button>
     </form>

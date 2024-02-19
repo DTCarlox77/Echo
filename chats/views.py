@@ -4,7 +4,6 @@ from django.contrib.auth import authenticate, logout, login
 
 from .models import CustomUser, Salas, SalasUsuarios
 
-# Create your views here.
 def main(request):
     
     return redirect('login')
@@ -19,10 +18,11 @@ def register_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        image = request.POST.get('imagen')
         
         if username and password:
             try:
-                user = CustomUser.objects.create_user(username=username, password=password)
+                user = CustomUser.objects.create_user(username=username, password=password, image=image)
                 user.save()
                 return redirect('login')
             
@@ -141,7 +141,13 @@ def edit_room(request, id):
     members = [member.usuario for member in relacion]
     
     if room.creador != request.user:
-        return redirect('room', id=id)
+        print('Hola mundo')
+        return render(request, 'interfaces/configure_room.html', {
+            'room' : room,
+            'message' : message,
+            'users' : members,
+            'editar' : False
+        })
         
     if request.method == 'POST':
         descripcion = request.POST.get('descripcion')
@@ -159,11 +165,11 @@ def edit_room(request, id):
         except Exception as e:
             message = f'Algo salió mal: {e}'
 
-            
     return render(request, 'interfaces/configure_room.html', {
         'room' : room,
         'message' : message,
-        'users' : members
+        'users' : members,
+        'editar' : True
     })
 
 @login_required
@@ -179,12 +185,15 @@ def remove_room(request, id):
 def remove_member(request, room_id, user_id):
     
     room = get_object_or_404(Salas, id=room_id)
+    user = get_object_or_404(SalasUsuarios, sala=room_id, usuario=user_id)
     
-    if room.creador == request.user:
-        user = get_object_or_404(SalasUsuarios, sala=room_id, usuario=user_id)
+    if room.creador == request.user or request.user == user.usuario:
         user.delete()
-    
-    return redirect('edit', id=room_id)
+        
+        if room.creador == request.user:
+            return redirect('edit', id=room_id)
+        
+    return redirect('rooms')
 
 @login_required
 def room(request, id):

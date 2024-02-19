@@ -1,15 +1,15 @@
 {% extends 'layouts/main.html' %}
 
-{% block tittle %}Edición de sala{% endblock %}
+{% block tittle %}{% if editar %}Edición de sala{% else %}Información de sala{% endif %}{% endblock %}
 {% load static %}
 
-{% block icon %}{% static 'icons/Edit.svg' %}{% endblock %}
+{% block icon %}{% if editar %}{% static 'icons/Edit.svg' %}{% else %}{% static 'icons/Room.svg' %}{% endif %}{% endblock %}
 
 {% block content %}
 
 <div class="navbar mt-2">
     <div class="container d-flex">
-        <h1 class="col-4 m-2">Configuración</h1>
+        <h1 class="col-4 m-2">{% if editar %}Configuración{% else %}Información{% endif %}</h1>
         <div class="d-flex nav-items">
             <a href="{% url 'room' id=room.id %}"><h4 class="m-2">Volver</h4></a>
         </div>
@@ -28,53 +28,64 @@
         </div>
     {% endif %}
     <h1>{{ room.nombre }}</h1>
-    {% if not room.password %}
+
+    {% if not room.password and editar %}
         <div class="alert alert-warning">
             <h4>Esta sala es de acceso público</h4>
             <p>Tenga en cuenta que cualquier persona será capaz de ingresar, enviar mensajes y leer los mensajes enviados con anterioridad.</p>
         </div>
     {% endif %}
-    <form action="{% url 'edit' id=room.id %}" method="post">
-        {% csrf_token %}
-        <br>
-        <h5>URL de imagen</h5>
-        <br>
-        <input type="text" class="col-8 form-control" placeholder="URL de imagen" name="imagen" value="{{ room.imagen }}">
-        <br>
-        <h5>Descripción</h5>
-        <br>
-        <textarea class="form-control" name="descripcion" id="" style="resize: none; height: 200px" placeholder="Descripción de la sala (Opcional)">{{ room.descripcion }}</textarea>
-        <br>
-        <h5>Clave de acceso</h5>
-        <br>
-        <input type="text" class="col-8 form-control" placeholder="Código de sala" name="password" value="{% if room.password %}{{ room.password }}{% endif %}">
-        <br>
-        <div class="">
 
-            <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
-            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                Borrar sala
-            </button>
-            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmación</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            ¿Está seguro que desea eliminar la sala "{{ room.nombre }}"? Esta acción es totalmente IRREVERSIBLE, todos los mensajes y el contenido presente será eliminado.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                            <a href="{% url 'remove' id=room.id %}"><button type="button" class="btn btn-danger">Borrar sala</button></a>
+    {% if editar %}
+        <form action="{% url 'edit' id=room.id %}" method="post">
+            {% csrf_token %}
+            <br>
+            <h5>URL de imagen</h5>
+            <br>
+            <input type="text" class="col-8 form-control" placeholder="URL de imagen" name="imagen" value="{{ room.imagen }}">
+            <br>
+            <h5>Descripción</h5>
+            <br>
+            <textarea class="form-control" name="descripcion" id="" style="resize: none; height: 200px" placeholder="Descripción de la sala (Opcional)">{{ room.descripcion }}</textarea>
+            <br>
+            <h5>Clave de acceso</h5>
+            <br>
+            <input type="text" class="col-8 form-control" placeholder="Código de sala" name="password" value="{% if room.password %}{{ room.password }}{% endif %}">
+            <br>
+            <div class="">
+
+                <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                    Borrar sala
+                </button>
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmación</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ¿Está seguro que desea eliminar la sala "{{ room.nombre }}"? Esta acción es totalmente IRREVERSIBLE, todos los mensajes y el contenido presente será eliminado.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                                <a href="{% url 'remove' id=room.id %}"><button type="button" class="btn btn-danger">Borrar sala</button></a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
+    {% else %}
+    <br>
+        <p>Creada por: {{ room.creador }}</p>
+        <h4>Descripción</h4>
+        <p>{{ room.descripcion }}</p>
+
+        <a href="{% url 'deluser' room_id=room.id user_id=user.id %}"><button class="btn btn-outline-danger">Salir de la sala</button></a>
+    {% endif %}
 </div>
 
 <br>
@@ -91,7 +102,9 @@
         <thead>
             <tr>
                 <th scope="col"><h5>Nombre de usuario</h5></th>
+                {% if editar %}
                 <th scope="col"><h5>Acción</h5></th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -99,7 +112,7 @@
 
                 <tr>
                     <td>{{ username }}</td>
-                    {% if not room.creador == username %}
+                    {% if not room.creador == username and editar %}
                         <td><a href="{% url 'deluser' room_id=room.id user_id=username.id %}"><button class="btn btn-outline-danger">Expulsar</button></a></td>
                     {% endif %}
                 </tr>

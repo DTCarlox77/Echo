@@ -41,11 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const mensajeTipo = data.message.username === username_dom.textContent ? 'alert-info' : 'alert-light';
                 ventana.innerHTML += `
-                <div class=""><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                    <div class="alert ${mensajeTipo} p-2 pb-0">
-                        <p>${data.message.message}</p>                    
-                    </div>
-
+                <div class="container-fluid d-flex">
+                    <img src="${data.message.userimage}" class="userimagechat">
+                    <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                </div>
+                <div class="alert ${mensajeTipo} p-2 pb-0">
+                    <p>${data.message.message}</p>                    
+                </div>
                 `;
                 scrollDown();
             }
@@ -53,10 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Sí entra un mensaje de un usuario que ha sido expulsado.
             else if (data.message.expelled) {
                 ventana.innerHTML += `
-                <div class=""><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                    <div class="alert alert-danger p-2 pb-0">
-                        <p>${data.message.message}</p>                    
-                    </div>
+                <div class="container-fluid d-flex">
+                    <img src="${data.message.userimage}" class="userimagechat">
+                    <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                </div>
+                <div class="alert alert-danger p-2 pb-0">
+                    <p>${data.message.message}</p>                    
+                </div>
                 `;
 
                 mensaje.disabled = true;

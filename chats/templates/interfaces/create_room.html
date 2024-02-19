@@ -28,12 +28,12 @@
         {% csrf_token %}
         <input type="text" class="form-control" name="nombre" id="" placeholder="Nombre de la sala">
         <br>
-        <input type="text" class="col-8 form-control" placeholder="URL de imagen" name="imagen" value="">
+        <input type="text" class="col-8 form-control" placeholder="URL de imagen" name="imagen" value="{% if respaldo.imagen %}{{ respaldo.imagen }}{% endif %}">
         <br>
-        <textarea class="form-control" name="descripcion" id="" style="resize: none; height: 200px" placeholder="Descripción de la sala (Opcional)"></textarea>
+        <textarea class="form-control" name="descripcion" id="" style="resize: none; height: 200px" placeholder="Descripción de la sala (Opcional)">{% if respaldo.descripcion %}{{ respaldo.descripcion }}{% endif %}</textarea>
         <br>
 
-        <input type="text" class="form-control" placeholder="Código de sala" name="password">
+        <input type="text" class="form-control" placeholder="Código de sala" name="password" value="{% if respaldo.password %}{{ respaldo.password }}{% endif %}">
         <br>
         <div class="alert alert-warning">
             <h4 class="mb-2">Advertencia:</h4>
