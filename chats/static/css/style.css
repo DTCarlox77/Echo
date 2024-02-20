@@ -85,7 +85,23 @@ a {
     align-items: center;
 }
 
+.audio-container {
+    width: 50%;
+}
+
+.file-container {
+    width: 50%;
+    min-width: 300px;
+}
+
+@media (max-width: 800px) {
+    .audio-container {
+        width: 100%;
+    }
+}
+
 @media (max-width: 500px) {
+
     .sala {
         width: 100%;
         display: flex;
@@ -130,4 +146,9 @@ a {
     border-radius: 50%;
     margin-right: 10px;
     object-fit: cover;
+}
+
+.chat-image {
+    border-radius: 10px;
+    width: 100%;
 }

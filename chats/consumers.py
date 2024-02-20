@@ -6,6 +6,9 @@ import datetime
 from dotenv import load_dotenv
 from os import getenv
 from openai import OpenAI
+import base64
+import mimetypes
+import os
 
 load_dotenv()
 
@@ -49,7 +52,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if text_data:
             text_data_json = json.loads(text_data)
             message = text_data_json.get('message')
-            media = text_data_json.get('media')
+            id_archivo = text_data_json.get('id_archivo')
             username = self.user.username
             userimage = self.user.image
             
@@ -57,8 +60,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             validar = await self.validacion_membresia()
 
             if validar:
-                    
-                # Envía el mensaje recibido al método de envío.
+                
+                # Envío tradicional de mensajes.
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -67,7 +70,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'username': username,
                         'userimage' : userimage,
                         'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                        'media' : media
+                        'id_archivo' : id_archivo
                     }
                 )
                 
@@ -95,7 +98,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'username': username,
                             'userimage' : userimage,
                             'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                            'media' : media
+                            'id_archivo' : None
                         }
                     )
                     
@@ -114,6 +117,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'username' : 'Echo Bot',
                         'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                         'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
+                        'id_archivo' : None,
                         'expelled' : True
                     }
                 }))
@@ -124,24 +128,50 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = event['username']
         userimage = event['userimage']
         fecha = event['fecha']
-        media = event['media']
+        archivo = event['id_archivo']
         validar = await self.validacion_membresia()
         
         # Revisa que el usuario pertenezca a la sala.
         if validar:
+            
+            if archivo:
+                
+                # Obtiene la ubicación del archivo recién enviado.
+                url_archivo = await self.obtener_url(archivo)
+                
+                file_path = f'multimedia/{url_archivo}'
+                        
+                with open(file_path, 'rb') as file:
+                    file_content = file.read()
+                                
+                # Conversión del archivo a binario.
+                file_base64 = base64.b64encode(file_content).decode('utf-8')
+                            
+                # Obtención del tipo de archivo.
+                file_type, _ = mimetypes.guess_type(file_path)
+                
+                await self.send(text_data=json.dumps({
+                    'message' : {
+                        'message': message,
+                        'username': username,
+                        'userimage' : userimage,
+                        'fecha' : fecha,
+                        'file_content' : file_base64,
+                        'file_type' : file_type,
+                        'file_name' : os.path.basename(file_path)
+                    },
+                }))
 
-            await self.send(text_data=json.dumps({
-                'message' : {
-                    'message': message,
-                    'username': username,
-                    'userimage' : userimage,
-                    'fecha' : fecha,
-                    'media' : media
-                },
-                # 'alert' : {
-                #     'message' : 'testing 123 testing'
-                # }
-            }))
+            else:
+                
+                await self.send(text_data=json.dumps({
+                    'message' : {
+                        'message': message,
+                        'username': username,
+                        'userimage' : userimage,
+                        'fecha' : fecha,
+                    },
+                }))
             
     # Almacena los mensajes en la base de datos.
     @database_sync_to_async
@@ -154,15 +184,42 @@ class ChatConsumer(AsyncWebsocketConsumer):
         mensajes = await self.obtener_mensajes()
         for mensaje in mensajes:
             
-            await self.send(text_data=json.dumps({
-                'message' : {                    
-                    'message': mensaje['mensaje'],
-                    'username': mensaje['emisor__username'],
-                    'userimage' : mensaje['emisor__image'],
-                    'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
-                    'media' : mensaje['archivo']
-                }
-            }))
+            if mensaje['archivo']:
+                
+                # Ruta del archivo.
+                file_path = f'multimedia/{mensaje['archivo']}'
+                
+                with open(file_path, 'rb') as file:
+                    file_content = file.read()
+                    
+                # Conversión del archivo a binario.
+                file_base64 = base64.b64encode(file_content).decode('utf-8')
+                
+                # Obtención del tipo de archivo.
+                file_type, _ = mimetypes.guess_type(file_path)
+            
+                await self.send(text_data=json.dumps({
+                    'message' : {                    
+                        'message': mensaje['mensaje'],
+                        'username': mensaje['emisor__username'],
+                        'userimage' : mensaje['emisor__image'],
+                        'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
+                        'file_content' : file_base64,
+                        'file_type' : file_type,
+                        'file_name' : os.path.basename(mensaje['archivo'])
+                    }
+                }))
+                
+            else:
+                
+                await self.send(text_data=json.dumps({
+                    'message' : {                    
+                        'message': mensaje['mensaje'],
+                        'username': mensaje['emisor__username'],
+                        'userimage' : mensaje['emisor__image'],
+                        'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
+                    }
+                }))
     
     # Carga los mensajes desde la base de datos.
     @database_sync_to_async
@@ -175,3 +232,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def validacion_membresia(self):
         validacion = SalasUsuarios.objects.filter(sala=int(self.room_name), usuario=self.user).exists()
         return validacion
+    
+    # Obtener dirección de multimedia.
+    @database_sync_to_async
+    def obtener_url(self, id):
+        
+        if id:
+            ruta = Mensajes.objects.get(id=int(id))
+            return ruta.archivo

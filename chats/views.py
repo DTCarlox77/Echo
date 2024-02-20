@@ -24,7 +24,7 @@ def register_view(request):
         
         if username and password:
             try:
-                user = CustomUser.objects.create_user(username=username, password=password, image=image)
+                user = CustomUser.objects.create_user(username=username, password=password, image=(image if image else 'https://cdn0.iconfinder.com/data/icons/unigrid-flat-human-vol-2/90/011_101_anonymous_anonym_hacker_vendetta_user_human_avatar-512.png'))
                 user.save()
                 return redirect('login')
             
@@ -258,8 +258,9 @@ def mediaroom(request, id):
             archivo = request.FILES.get('multimedia')
             
             if archivo:
-                Mensajes.objects.create(emisor=request.user, sala=room, archivo=archivo)
+                nuevo_archivo = Mensajes.objects.create(emisor=request.user, sala=room, archivo=archivo)
+                id_archivo = nuevo_archivo.id
 
                 return JsonResponse({
-                    'message': 'Archivo agregado exitosamente'
+                    'id': id_archivo
                 })

@@ -70,37 +70,116 @@ document.addEventListener('DOMContentLoaded', () => {
                 scrollDown();
             }
 
-            else if (data.message.media) {
-            
-                // // Validación del tipo de archivo según la extensión
-                // if (fileExtension === 'mp4') {
-                //     // Si es un archivo de video (.mp4)
-                //     ventana.innerHTML += `
-                //         <h4>Archivo de Video</h4>
-                //         <video controls>
-                //             <source src="${data.message.media}" type="video/mp4">
-                //             Tu navegador no soporta el elemento de video.
-                //         </video>
-                //     `;
-                // } else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-                //     // Si es un archivo de imagen (.jpg, .jpeg, .png, .gif)
-                //     ventana.innerHTML += `
-                //         <h4>Archivo de Imagen</h4>
-                //         <img src="${data.message.media}" alt="Imagen">
-                //     `;
-                // } else {
-                //     // Otros tipos de archivo
-                //     ventana.innerHTML += `
-                //         <h4>Archivo no compatible</h4>
-                //     `;
-                // }
-                scrollDown();
-            }
-        }
+            else if (data.message.file_content) {
 
-        // if (data.alert) {
-        //     alert(data.alert.message);
-        // }
+                ventana.innerHTML += `
+                <div class="container-fluid d-flex">
+                    <img src="${data.message.userimage}" class="userimagechat">
+                    <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                </div>
+                `;
+            
+                const file_content_64 = data.message.file_content;
+                const file_type = data.message.file_type;
+                const file_name = data.message.file_name;
+
+                // Decodificación del formato base 64.
+                const file_content = atob(file_content_64);
+
+                // Creación de un Blob (objeto de datos binarios) a partir del contenido del archivo.
+                const blob = new Blob([Uint8Array.from(file_content, c => c.charCodeAt(0))], { type: file_type });
+
+                if (file_type.startsWith('audio/')) {
+                    ventana.innerHTML += `
+                    <div class="audio-container alert alert-light p-2 pb-0">
+                        <div class="d-flex">
+                            <span class="bi bi-file-earmark-music"></span>
+                            <h6 class="m-1">Audio</h6>
+                        </div>
+                        <p>${file_name}</p>
+                        <hr>
+                        <div class="container">
+                            <audio controls class="w-100">
+                                <source src="${URL.createObjectURL(blob)}">
+                            </audio>   
+                        </div>
+                    </div>
+                    `;
+                }
+
+                else if (file_type === 'application/pdf') {
+                    ventana.innerHTML += `                    
+                    <div class="file-container alert alert-light p-2 pb-0">
+                        <div class="d-flex">
+                            <span class="bi bi-filetype-pdf"></span>
+                            <h6 class="m-1">Documento PDF</h6>
+                        </div>
+                        <p>${file_name}</p>
+                        <hr>
+                        <div class="container">
+                            <a href="${URL.createObjectURL(blob)}" download="${file_name}">
+                            <button class="btn btn-outline-dark">Descargar</button>
+                            </a>
+                        </div>
+                        <br>
+                    </div>
+                    `;
+                }
+
+                else if (file_type === 'video/') {
+                    ventana.innerHTML += `                    
+                    <div class="file-container alert alert-light p-2 pb-0">
+                        <div class="d-flex">
+                            <span class="bi bi-play-btn"></span>
+                            <h6 class="m-1">Video</h6>
+                        </div>
+                        <p>${file_name}</p>
+                        <div class="alert alert-info p-2 pb-0">
+                            <video class="videos" controls>
+                                <source src="${URL.createObjectURL(blob)}">
+                            </video>                  
+                        </div>
+                    </div>
+                    `;
+                }
+
+                else if (file_type.startsWith('image/')) {
+                    ventana.innerHTML += `                    
+                    <div class="audio-container alert alert-light p-2 pb-0">
+                        <div class="d-flex">
+                            <span class="bi bi-image"></span>
+                            <h6 class="m-1">Imagen</h6>
+                        </div>
+                        <p>${file_name}</p>
+                        <hr>
+                        <img class="chat-image mb-2" src="${URL.createObjectURL(blob)}" alt="">   
+                    
+                    </div>
+                    `;
+                }
+
+                else {
+                    ventana.innerHTML += `
+                    <div class="file-container alert alert-light p-2 pb-0">
+                        <div class="d-flex">
+                            <span class="bi bi-file-earmark-text"></span>
+                            <h6 class="m-1">Archivo</h6>
+                        </div>
+                        <p>${file_name}</p>
+                        <hr>
+                        <div class="container">
+                            <a href="${URL.createObjectURL(blob)}" download="${file_name}">
+                            <button class="btn btn-outline-dark">Descargar</button>
+                            </a>
+                        </div>
+                        <br>
+                    </div>
+                    `;
+                }
+            }
+
+            scrollDown();   
+        }
     };
     
     const mensaje = document.querySelector('#mensaje');
@@ -128,13 +207,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(response => response.json())
                 .then(data => {
                     // Acciones que se podrían agregar si el envío multimedia es aceptado.
+                    websocket.send(JSON.stringify({
+                        'message' : mensaje.value,
+                        'id_archivo' : data.id
+                    }));
                 })
                 .catch(error => console.error("Error con la solicitud:", error));
 
-                websocket.send(JSON.stringify({
-                    'message' : mensaje.value,
-                    'media' : media_data
-                }));
+
             }
         } else {
             console.error('Conexión websocket no disponible.');
@@ -166,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
     archivo.addEventListener('change', (e) => {
         multimedia = e.target.files[0];
         if (!multimedia) {
-            console.log('No se seleccionaron archivos');
             return;
         }
         mensaje.value = `Archivo a enviar: ${multimedia.name}`;
