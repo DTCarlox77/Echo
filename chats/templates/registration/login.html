@@ -3,10 +3,23 @@
 {% load static %}
 
 {% block tittle %}Inicio de sesión{% endblock %}
+{% block icon %}{% static 'icons/Registration.svg' %}{% endblock %}
 
 {% block content %}
 
 <div class="container">
+
+    <div class="navbar mt-2">
+        <div class="navbar">
+            <div class="d-flex nav-items">
+                <a href="{% url 'create' %}"><h4 class="m-2">Echo</h4></a>
+                <a href="{% url 'rooms' %}"><h4 class="m-2">Iniciar sesión</h4></a>
+                <a href="{% url 'myrooms' %}"><h4 class="m-2">Registro</h4></a>
+                <a href="{% url 'myrooms' %}"><h4 class="m-2">Acerca de</h4></a>
+            </div>
+        </div>
+    </div>
+    <hr>
 
     <div class="container navbar barra mt-4">
         <h1>Inicio de sesión</h1>

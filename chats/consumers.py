@@ -140,27 +140,32 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 url_archivo = await self.obtener_url(archivo)
                 
                 file_path = f'multimedia/{url_archivo}'
-                        
-                with open(file_path, 'rb') as file:
-                    file_content = file.read()
-                                
-                # Conversión del archivo a binario.
-                file_base64 = base64.b64encode(file_content).decode('utf-8')
-                            
-                # Obtención del tipo de archivo.
-                file_type, _ = mimetypes.guess_type(file_path)
                 
-                await self.send(text_data=json.dumps({
-                    'message' : {
-                        'message': message,
-                        'username': username,
-                        'userimage' : userimage,
-                        'fecha' : fecha,
-                        'file_content' : file_base64,
-                        'file_type' : file_type,
-                        'file_name' : os.path.basename(file_path)
-                    },
-                }))
+                try:
+                        
+                    with open(file_path, 'rb') as file:
+                        file_content = file.read()
+                                    
+                    # Conversión del archivo a binario.
+                    file_base64 = base64.b64encode(file_content).decode('utf-8')
+                                
+                    # Obtención del tipo de archivo.
+                    file_type, _ = mimetypes.guess_type(file_path)
+                    
+                    await self.send(text_data=json.dumps({
+                        'message' : {
+                            'message': message,
+                            'username': username,
+                            'userimage' : userimage,
+                            'fecha' : fecha,
+                            'file_content' : file_base64,
+                            'file_type' : file_type,
+                            'file_name' : os.path.basename(file_path)
+                        },
+                    }))
+                
+                except Exception as e:
+                    print(f'Ha ocurrido un error al momento de tomar el archivo {e}')
 
             else:
                 
@@ -189,26 +194,40 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # Ruta del archivo.
                 file_path = f'multimedia/{mensaje['archivo']}'
                 
-                with open(file_path, 'rb') as file:
-                    file_content = file.read()
-                    
-                # Conversión del archivo a binario.
-                file_base64 = base64.b64encode(file_content).decode('utf-8')
+                try:
                 
-                # Obtención del tipo de archivo.
-                file_type, _ = mimetypes.guess_type(file_path)
-            
-                await self.send(text_data=json.dumps({
-                    'message' : {                    
-                        'message': mensaje['mensaje'],
-                        'username': mensaje['emisor__username'],
-                        'userimage' : mensaje['emisor__image'],
-                        'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
-                        'file_content' : file_base64,
-                        'file_type' : file_type,
-                        'file_name' : os.path.basename(mensaje['archivo'])
-                    }
-                }))
+                    with open(file_path, 'rb') as file:
+                        file_content = file.read()
+                        
+                    # Conversión del archivo a binario.
+                    file_base64 = base64.b64encode(file_content).decode('utf-8')
+                    
+                    # Obtención del tipo de archivo.
+                    file_type, _ = mimetypes.guess_type(file_path)
+                
+                    await self.send(text_data=json.dumps({
+                        'message' : {                    
+                            'message': mensaje['mensaje'],
+                            'username': mensaje['emisor__username'],
+                            'userimage' : mensaje['emisor__image'],
+                            'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
+                            'file_content' : file_base64,
+                            'file_type' : file_type,
+                            'file_name' : os.path.basename(mensaje['archivo'])
+                        }
+                    }))
+                    
+                except Exception as e:
+                    print(f'Ha ocurrido un error al momento de tomar el archivo {e}')
+                    
+                    await self.send(text_data=json.dumps({
+                        'message' : {                    
+                            'message': 'Archivo eliminado',
+                            'username': mensaje['emisor__username'],
+                            'userimage' : mensaje['emisor__image'],
+                            'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
+                        }
+                    }))
                 
             else:
                 

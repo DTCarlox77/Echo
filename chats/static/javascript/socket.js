@@ -126,15 +126,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
 
-                else if (file_type === 'video/') {
+                else if (file_type.startsWith('video/')) {
                     ventana.innerHTML += `                    
-                    <div class="file-container alert alert-light p-2 pb-0">
+                    <div class="audio-container alert alert-light p-2 pb-0">
                         <div class="d-flex">
                             <span class="bi bi-play-btn"></span>
                             <h6 class="m-1">Video</h6>
                         </div>
                         <p>${file_name}</p>
-                        <div class="alert alert-info p-2 pb-0">
+                        <div class="alert alert-light p-2 pb-0">
                             <video class="videos" controls>
                                 <source src="${URL.createObjectURL(blob)}">
                             </video>                  

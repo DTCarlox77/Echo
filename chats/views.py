@@ -77,7 +77,7 @@ def logout_view(request):
 @login_required
 def rooms_view(request):
     
-    rooms = Salas.objects.all()
+    rooms = Salas.objects.all().order_by('fecha').reverse()
     
     return render(request, 'interfaces/rooms.html', {
         'rooms' : rooms if rooms else None,

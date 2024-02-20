@@ -19,10 +19,10 @@ class Salas(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
 
 
-class Conferencias(models.Model):
+# class Conferencias(models.Model):
 
-    sala = models.ForeignKey(Salas, on_delete=models.CASCADE, related_name='room_conference')
-    fecha = models.DateTimeField(auto_now_add=True)
+#     sala = models.ForeignKey(Salas, on_delete=models.CASCADE, related_name='room_conference')
+#     fecha = models.DateTimeField(auto_now_add=True)
 
 
 class Mensajes(models.Model):

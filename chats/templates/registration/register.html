@@ -3,35 +3,51 @@
 {% load static %}
 
 {% block tittle %}Registro{% endblock %}
+{% block icon %}{% static 'icons/Registration.svg' %}{% endblock %}
 
 {% block content %}
 
-<div class="container navbar barra mt-4">
-    <h1>Registro</h1>
-</div>
-<hr>
-<div class="container border p-4 rounded">
-    {% if message %}
-        <div class="alert alert-danger">
-            <h4>Error</h4>
-            <p>{{ message }}</p>
-        </div>
-    {% endif %}
-    <br>
-    <form action="{% url 'register' %}" method="post">
-        {% csrf_token %}
-        <input type="text" name="username" id="" class="form-control" placeholder="Nombre de usuario">
-        <br>
-        <input type="password" name="password" class="form-control" placeholder="Contraseña">
-        <br>
-        <input type="text" name="imagen" id="" class="form-control" placeholder="URL de imagen">
-        <br>
-        <button type="submit" class="btn btn-primary"><h5>Crear cuenta</h5></button>
-    </form>
-    <br>
-    <br>
-    <a href="{% url 'login' %}">¿Ya tienes una cuenta?</a>
+<div class="container">
 
+    <div class="navbar mt-2">
+        <div class="navbar">
+            <div class="d-flex nav-items">
+                <a href="{% url 'create' %}"><h4 class="m-2">Echo</h4></a>
+                <a href="{% url 'rooms' %}"><h4 class="m-2">Iniciar sesión</h4></a>
+                <a href="{% url 'myrooms' %}"><h4 class="m-2">Registro</h4></a>
+                <a href="{% url 'myrooms' %}"><h4 class="m-2">Acerca de</h4></a>
+            </div>
+        </div>
+    </div>
+    <hr>
+    
+    <div class="container navbar barra mt-4">
+        <h1>Registro</h1>
+    </div>
+    <hr>
+    <div class="container border p-4 rounded">
+        {% if message %}
+            <div class="alert alert-danger">
+                <h4>Error</h4>
+                <p>{{ message }}</p>
+            </div>
+        {% endif %}
+        <br>
+        <form action="{% url 'register' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="username" id="" class="form-control" placeholder="Nombre de usuario">
+            <br>
+            <input type="password" name="password" class="form-control" placeholder="Contraseña">
+            <br>
+            <input type="text" name="imagen" id="" class="form-control" placeholder="URL de imagen">
+            <br>
+            <button type="submit" class="btn btn-primary">Crear cuenta</button>
+        </form>
+        <br>
+        <br>
+        <a href="{% url 'login' %}">¿Ya tienes una cuenta?</a>
+
+    </div>
 </div>
 
 {% endblock %}
