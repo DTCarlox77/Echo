@@ -7,6 +7,10 @@
 
 {% block content %}
 
+<style>
+
+</style>
+
 <div class="navbar mt-0">
     <div class="d-flex nav-items center main-nav-container">
         <a class="nombre" href="{% url 'edit' id=room.id %}"><h2 class="">{{ room.nombre | slice:":15" }}</h2></a>
@@ -21,7 +25,7 @@
 </div>
 
 <div class="container d-flex fixed-bottom mb-4">
-    <input type="text" id="mensaje" class="form-control m-1" placeholder="Escribe tu mensaje">
+    <textarea style="resize: none; overflow: hidden;" rows="1" class="form-control m-1" id="mensaje" placeholder="Escribe tu mensaje"></textarea>
     <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="enviarmensaje" class="btn btn-light"><i class="bi bi-send-fill"></i> Enviar</button>
     <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="multimedia" class="btn btn-light"><i class="bi bi-folder-fill"></i> Archivo</button>
 </div>

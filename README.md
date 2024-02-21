@@ -1,2 +1,3 @@
 # Echo
-CS50W Finnal Project 
+
+TODO: Make a readme :(

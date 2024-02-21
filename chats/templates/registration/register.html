@@ -16,18 +16,18 @@
     <div class="container border p-4 rounded">
         {% if message %}
             <div class="alert alert-danger">
-                <h4>Error</h4>
+                <h4>Error:</h4>
                 <p>{{ message }}</p>
             </div>
         {% endif %}
         <br>
         <form action="{% url 'register' %}" method="post">
             {% csrf_token %}
-            <input type="text" name="username" id="" class="form-control" placeholder="Nombre de usuario">
+            <input type="text" name="username" id="" class="form-control" placeholder="Nombre de usuario" value="{% if respaldo.username %}{{ respaldo.username }}{% endif %}">
             <br>
-            <input type="password" name="password" class="form-control" placeholder="Contraseña">
+            <input type="password" name="password" class="form-control" placeholder="Contraseña" value="{% if respaldo.password %}{{ respaldo.password }}{% endif %}">
             <br>
-            <input type="text" name="imagen" id="" class="form-control" placeholder="URL de imagen">
+            <input type="text" name="imagen" id="" class="form-control" placeholder="URL de imagen" value="{% if respaldo.image %}{{ respaldo.image }}{% endif %}">
             <br>
             <button type="submit" class="btn btn-primary">Crear cuenta</button>
         </form>

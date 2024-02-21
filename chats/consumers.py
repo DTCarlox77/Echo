@@ -9,6 +9,7 @@ from openai import OpenAI
 import base64
 import mimetypes
 import os
+import markdown
 
 load_dotenv()
 
@@ -61,6 +62,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             username = self.user.username
             userimage = self.user.image
             
+            # Para validación de la IA.
+            changed_message = message.lower()
+            
             # Revisa si el emisor pertenece a la sala.
             validar = await self.validacion_membresia()
 
@@ -79,39 +83,55 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }
                 )
                 
-                # Uso de la IA con la api de OpenAI, en las variables de entorno se establecen sus parámetros.
-                if message.startswith('/EchoBot') and (str(getenv('OPENAI_ACTIVE')) == 'True'): 
-                    
-                    chat_completion = client.chat.completions.create(
-                        messages=[
-                            {
-                                'role' : 'user',
-                                'content' : message,
-                            }
-                        ],
-                        model=getenv('OPENAI_ENGINE'),
-                    )
-                    
-                    chat_message = chat_completion.choices[0].message.content
-                    format_message = f'Respuesta de EchoBot: {chat_message}'
-                    
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            'type': 'chat_message',
-                            'message': format_message,
-                            'username': username,
-                            'userimage' : userimage,
-                            'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                            'id_archivo' : None
-                        }
-                    )
-                    
-                    # Almacena el mensaje en la base de datos.
-                    await self.guardar_mensaje(format_message)
-                    
                 # Almacena el mensaje en la base de datos.
                 await self.guardar_mensaje(message)
+                
+                # Uso de la IA con la api de OpenAI, en las variables de entorno se establecen sus parámetros.
+                if changed_message.startswith('/eb') and (str(getenv('OPENAI_ACTIVE')) == 'True'): 
+                    
+                    try:
+                        
+                        chat_completion = client.chat.completions.create(
+                            messages = [
+                                {
+                                    'role' : 'user',
+                                    'content' : message,
+                                }
+                            ],
+                            model = getenv('OPENAI_ENGINE'),
+                        )
+                        
+                        chat_message = chat_completion.choices[0].message.content
+                        format_message = f'/EB:CODE:18-Respuesta de EchoBot: {chat_message}'
+                        
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                'type': 'chat_message',
+                                'message': f'/md {chat_message}',
+                                'username': 'EchoBot',
+                                'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
+                                'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                                'id_archivo' : None,
+                            }
+                        )
+                        
+                        # Almacena el mensaje en la base de datos.
+                        await self.guardar_mensaje(format_message)   
+                    
+                    except Exception as e:
+                        
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                'type': 'chat_message',
+                                'message': f'/md <p>Error de conexión con OpenAI.</p><br><code>{e}</code>',
+                                'username': 'EchoBot',
+                                'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
+                                'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                                'id_archivo' : None,
+                            }
+                        )
             
             # Si el usuario no pertenece a la sala se le reflejará que fue expulsado.
             else:
@@ -119,7 +139,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data=json.dumps({
                     'message' : {                        
                         'message' : 'Has sido expulsado de la sala.',
-                        'username' : 'Echo Bot',
+                        'username' : 'EchoBot',
                         'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                         'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
                         'id_archivo' : None,
@@ -156,6 +176,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         fecha = event['fecha']
         archivo = event['id_archivo']
         validar = await self.validacion_membresia()
+        markdown_validation = False
+        
+        if message.startswith('/md'):
+            message = message[3:].strip()
+            message = markdown.markdown(message)
+            print(message)
+            markdown_validation = True
         
         # Mantiene en control el límite de mensajes.
         await self.eliminar_mensajes()
@@ -204,6 +231,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'username': username,
                         'userimage' : userimage,
                         'fecha' : fecha,
+                        'markdown' : markdown_validation
                     },
                 }))
             
@@ -243,10 +271,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
                             'file_content' : file_base64,
                             'file_type' : file_type,
-                            'file_name' : os.path.basename(mensaje['archivo'])
+                            'file_name' : os.path.basename(mensaje['archivo']),
                         }
                     }))
                     
+                    # Esto en caso de que el archivo haya sido eliminado y no pueda encontrarse.
                 except Exception as e:
                     print(f'Ha ocurrido un error al momento de tomar el archivo {e}')
                     
@@ -260,13 +289,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }))
                 
             else:
+                username = mensaje['emisor__username']
+                message = mensaje['mensaje']
+                userimage = mensaje['emisor__image']
+                markdown_validation = False
+                
+                if message.startswith('/EB:CODE:18-Respuesta de EchoBot:'):
+                    username = 'Echobot'
+                    userimage = 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg'
+                    message = markdown.markdown(message[34:])
+                    markdown_validation = True
+                
+                if message.startswith('/md'):
+                    message = message[3:].strip()
+                    message = markdown.markdown(message)
+                    markdown_validation = True
                 
                 await self.send(text_data=json.dumps({
                     'message' : {                    
-                        'message': mensaje['mensaje'],
-                        'username': mensaje['emisor__username'],
-                        'userimage' : mensaje['emisor__image'],
+                        'message': message,
+                        'username': username,
+                        'userimage' : userimage,
                         'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
+                        'markdown' : markdown_validation,
                     }
                 }))
     
@@ -292,14 +337,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
     @database_sync_to_async
     def eliminar_mensajes(self):
-        # Obtener los IDs de los últimos 30 mensajes
+        # Obtener los IDs de los últimos 30 mensajes.
         mensajes_a_mantener = Mensajes.objects.filter(sala__id=int(self.room_name)).order_by('-fecha').values_list('id', flat=True)[:20]
 
-        # Obtener los IDs de todos los mensajes
+        # Obtener los IDs de todos los mensajes.
         todos_los_mensajes = Mensajes.objects.filter(sala__id=int(self.room_name)).values_list('id', flat=True)
 
-        # Identificar los mensajes a eliminar
+        # Identificar los mensajes a eliminar.
         mensajes_a_eliminar = set(todos_los_mensajes) - set(mensajes_a_mantener)
 
-        # Eliminar los mensajes que no deben ser mantenidos
+        # Eliminar los mensajes que no deben ser mantenidos.
         Mensajes.objects.filter(id__in=mensajes_a_eliminar).delete()

@@ -85,6 +85,11 @@ a {
     align-items: center;
 }
 
+.markdown img {
+    border-radius: 10px;
+    width: 50%;
+}
+
 .audio-container {
     width: 50%;
 }
@@ -118,6 +123,11 @@ a {
     }
 
     .sala .room_img {
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    .markdown img {
         border-radius: 5px;
         width: 100%;
     }

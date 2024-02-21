@@ -26,7 +26,7 @@
     {% endif %}
     <form action="{% url 'create' %}" method="post">
         {% csrf_token %}
-        <input type="text" class="form-control" name="nombre" id="" placeholder="Nombre de la sala">
+        <input type="text" class="form-control" name="nombre" id="" placeholder="Nombre de la sala" value="{% if respaldo.nombre %}{{ respaldo.nombre }}{% endif %}">
         <br>
         <input type="text" class="col-8 form-control" placeholder="URL de imagen" name="imagen" value="{% if respaldo.imagen %}{{ respaldo.imagen }}{% endif %}">
         <br>
