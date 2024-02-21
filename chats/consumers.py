@@ -222,7 +222,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if mensaje['archivo']:
                 
                 # Ruta del archivo.
-                file_path = f'multimedia/{mensaje['archivo']}'
+                file_path = f'multimedia/{mensaje["archivo"]}'
                 
                 try:
                 
