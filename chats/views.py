@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout, login
 from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import render_to_string
 
 from .models import CustomUser, Salas, SalasUsuarios, Mensajes
 
@@ -76,13 +77,13 @@ def logout_view(request):
 
 @login_required
 def rooms_view(request):
-    
-    rooms = Salas.objects.all().order_by('fecha').reverse()
-    
+    rooms = Salas.objects.all().order_by('fecha').reverse()[:3]
+
     return render(request, 'interfaces/rooms.html', {
-        'rooms' : rooms if rooms else None,
-        'public' : True
+        'rooms': rooms,
+        'public': True
     })
+
 
 @login_required
 def myrooms(request):
@@ -264,3 +265,84 @@ def mediaroom(request, id):
                 return JsonResponse({
                     'id': id_archivo
                 })
+                
+@login_required 
+def profile_view(request, id):
+    
+    profile = get_object_or_404(CustomUser, id=id)
+    
+    if profile.id == request.user.id:
+        
+        if request.method == 'POST':
+            biografia = request.POST.get('biografia')
+            image = request.POST.get('imagen')
+            
+            try:
+                
+                profile.biografia = biografia
+                profile.image = image
+                profile.save()
+                
+            except Exception as e:
+                message = 'No se pudieron almacenar los cambios.'
+                
+                return render(request, 'interfaces/profile.html', {
+                    'profile' : profile,
+                    'propio' : True,
+                    'message' : message
+                })  
+            
+        return render(request, 'interfaces/profile.html', {
+            'profile' : profile,
+            'propio' : True
+        })    
+        
+    return render(request, 'interfaces/profile.html', {
+        'profile' : profile,
+        'propio' : False
+    })    
+
+def load_rooms(request):
+    offset = int(request.GET.get('offset', 0))
+
+    if offset:
+        salas_adicionales = Salas.objects.all().order_by('fecha').reverse()[offset:offset+3]
+        salas_html = render_to_string('interfaces/rooms_shortcut.html', {'rooms': salas_adicionales, 'public': True})
+
+        return JsonResponse({
+            'salas_html': salas_html
+        })
+
+    return JsonResponse({
+        'message': 'No se proporcionó un valor de offset válido.'
+    })
+
+def search_view(request):
+    busqueda = request.GET.get('busqueda', '')
+    
+    if busqueda:
+        salas_buscadas = Salas.objects.filter(nombre__contains=busqueda)
+        
+        if salas_buscadas:
+            salas_html = render_to_string('interfaces/rooms_shortcut.html', {'rooms': salas_buscadas, 'public': True})
+            return JsonResponse({
+                'salas_html': salas_html
+            })
+        else:
+            return JsonResponse({
+                'message': 'No se encontraron salas.'
+            })
+
+def cancel_search(request):
+    rooms = Salas.objects.all().order_by('fecha').reverse()[:3]
+    
+    if rooms:
+        salas_html = render_to_string('interfaces/rooms_shortcut.html', {'rooms': rooms, 'public': True})
+
+        return JsonResponse({
+            'salas_html': salas_html
+        })
+    else:
+        return JsonResponse({
+            'message': 'No hay salas disponibles.'
+        })

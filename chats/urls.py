@@ -15,4 +15,8 @@ urlpatterns = [
     path('myrooms/', views.myrooms, name='myrooms'), # Salas en donde se ingresó
     path('deluser/<int:room_id>/<int:user_id>/', views.remove_member, name='deluser'), # Eliminar usuario de sala
     path('mediaroom/<int:id>/', views.mediaroom, name='mediaroom'), # Para envío de paquetes (Fetch) 
+    path('profile/<int:id>/', views.profile_view, name='profile'),
+    path('rooms/load', views.load_rooms, name='load'),
+    path('rooms/search', views.search_view, name='search'),
+    path('rooms/cancel', views.cancel_search, name='cancel')
 ]

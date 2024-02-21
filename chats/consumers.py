@@ -131,6 +131,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         archivo = event['id_archivo']
         validar = await self.validacion_membresia()
         
+        # Mantiene en control el límite de mensajes.
+        await self.eliminar_mensajes()
+        
         # Revisa que el usuario pertenezca a la sala.
         if validar:
             
@@ -186,6 +189,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # Carga y envía los mensajes al cliente.
     async def cargar_mensajes_previos(self):
+        await self.eliminar_mensajes()
         mensajes = await self.obtener_mensajes()
         for mensaje in mensajes:
             
@@ -259,3 +263,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if id:
             ruta = Mensajes.objects.get(id=int(id))
             return ruta.archivo
+        
+    @database_sync_to_async
+    def eliminar_mensajes(self):
+        # Obtener los IDs de los últimos 30 mensajes
+        mensajes_a_mantener = Mensajes.objects.filter(sala__id=int(self.room_name)).order_by('-fecha').values_list('id', flat=True)[:20]
+
+        # Obtener los IDs de todos los mensajes
+        todos_los_mensajes = Mensajes.objects.filter(sala__id=int(self.room_name)).values_list('id', flat=True)
+
+        # Identificar los mensajes a eliminar
+        mensajes_a_eliminar = set(todos_los_mensajes) - set(mensajes_a_mantener)
+
+        # Eliminar los mensajes que no deben ser mantenidos
+        Mensajes.objects.filter(id__in=mensajes_a_eliminar).delete()

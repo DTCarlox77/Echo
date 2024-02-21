@@ -7,34 +7,27 @@
 
 {% block content %}
 
-<style>
-    /* Estilo para el contenedor del reproductor de audio */
-
-/* Estilo para el reproductor de audio */
-audio {
-    width: 100%;
-    outline: none;
-}
-
-</style>
-
-<div class="navbar mt-2">
-    <div class="container d-flex">
-        <a class="nombre col-8" href="{% url 'edit' id=room.id %}"><h1 class="col-4 m-2">{{ room.nombre }}</h1></a>
-        <div class="d-flex nav-items">
-            <a href="{% url 'rooms' %}"><h4 class="m-2">Volver</h4></a>
-        </div>
+<div class="navbar mt-0">
+    <div class="d-flex nav-items center main-nav-container">
+        <a class="nombre" href="{% url 'edit' id=room.id %}"><h2 class="">{{ room.nombre | slice:":15" }}</h2></a>
+        <a href="{% url 'rooms' %}"><h4 class="">Volver</h4></a>
     </div>
 </div>
 
 <hr>
 <div class="fondo m-0 p-0">
     <div class="container cuerpo" id="ventana">
+        <div class="alert alert-warning center" style="display: flex; justify-content:center">
+            <p class="m-0">DTCarlox77 se ha unido a la sala</p>
+        </div>
 
+        <div class="alert alert-danger center" style="display: flex; justify-content:center">
+            <p class="m-0">DTCarlox77 abandonó la sala</p>
+        </div>
     </div>
 </div>
 
-<div class="container d-flex fixed-bottom mb-1" style="background-color: white;">
+<div class="container d-flex fixed-bottom mb-4">
     <input type="text" id="mensaje" class="form-control m-1" placeholder="Escribe tu mensaje">
     <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="enviarmensaje" class="btn btn-light"><i class="bi bi-send-fill"></i> Enviar</button>
     <button style="display: flex; justify-content: space-around; align-items: center; gap:3px;" type="button" id="multimedia" class="btn btn-light"><i class="bi bi-folder-fill"></i> Archivo</button>

@@ -1,0 +1,57 @@
+{% extends 'layouts/main.html' %}
+
+{% block tittle %}{{ profile.username }}{% endblock %}
+{% load static %}
+
+{% block icon %}{% endblock %}
+
+{% block content %}
+
+<div class="navbar mt-2">
+    <div class="container d-flex">
+        <h1 class="col-4 m-2">{{ profile.username }}</h1>
+        <div class="d-flex nav-items">
+            <a href="javascript:history.back()"><h4 class="m-2">Volver</h4></a>
+        </div>
+    </div>
+</div>
+<hr>
+
+<div class="container">
+    <img class="image-edit" src="{{ profile.image }}" alt="Imagen de usuario">
+</div>
+
+<div class="container">
+    {% if message %}
+        <div class="alert alert-danger">
+            <h4>Error: </h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endif %}
+    {% if propio %}
+    <form action="{% url 'profile' id=profile.id %}" method="post">
+        {% csrf_token %}
+        <br>
+        <h5>URL de imagen</h5>
+        <br>
+        <input type="text" class="col-8 form-control" placeholder="URL de imagen" name="imagen" value="{{ profile.image }}">
+        <br>
+        <h5>Biografía</h5>
+        <br>
+        <textarea class="form-control" name="biografia" id="" style="resize: none; height: 200px" placeholder="Redacta una biografía.">{{ profile.biografia }}</textarea>
+        <br>
+
+        <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
+        <hr>
+        <p>Usuario desde el {{ profile.date_joined }}</p>
+    </form>
+    {% else %}
+    <br>
+    <h4>Descripción</h4>
+    <p>{{ profile.biografia }}</p>
+    <p>Usuario desde el {{ profile.date_joined }}</p>
+    {% endif %}
+</div>
+<br>
+
+{% endblock %}

@@ -41,26 +41,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const mensajeTipo = data.message.username === username_dom.textContent ? 'alert-info' : 'alert-light';
                 ventana.innerHTML += `
-                <div class="container-fluid d-flex">
-                    <img src="${data.message.userimage}" class="userimagechat">
-                    <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                </div>
-                <div class="alert ${mensajeTipo} p-2 pb-0">
-                    <p>${data.message.message}</p>                    
+                <div class="mensaje-sala">
+                    <div class="container-fluid d-flex">
+                        <img src="${data.message.userimage}" class="userimagechat">
+                        <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                    </div>
+                    <div class="alert ${mensajeTipo} p-2 pb-0">
+                        <p>${data.message.message}</p>                    
+                    </div>
                 </div>
                 `;
-                scrollDown();
+
+                const mensajes = ventana.querySelectorAll('.mensaje-sala');
+                console.log(mensajes);
+                if (mensajes.length > 20) {
+                    mensajes[0].remove();
+                }
+            
+                scrollDown();  
             }
 
             // Sí entra un mensaje de un usuario que ha sido expulsado.
             else if (data.message.expelled) {
                 ventana.innerHTML += `
-                <div class="container-fluid d-flex">
-                    <img src="${data.message.userimage}" class="userimagechat">
-                    <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                </div>
-                <div class="alert alert-danger p-2 pb-0">
-                    <p>${data.message.message}</p>                    
+                <div class="mensaje-sala">
+                    <div class="container-fluid d-flex">
+                        <img src="${data.message.userimage}" class="userimagechat">
+                        <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                    </div>
+                    <div class="alert alert-danger p-2 pb-0">
+                        <p>${data.message.message}</p>                    
+                    </div>
                 </div>
                 `;
 
@@ -71,13 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             else if (data.message.file_content) {
-
-                ventana.innerHTML += `
-                <div class="container-fluid d-flex">
-                    <img src="${data.message.userimage}" class="userimagechat">
-                    <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                </div>
-                `;
             
                 const file_content_64 = data.message.file_content;
                 const file_type = data.message.file_type;
@@ -91,94 +95,124 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (file_type.startsWith('audio/')) {
                     ventana.innerHTML += `
-                    <div class="audio-container alert alert-light p-2 pb-0">
-                        <div class="d-flex">
-                            <span class="bi bi-file-earmark-music"></span>
-                            <h6 class="m-1">Audio</h6>
+                    <div class="mensaje-sala">
+                        <div class="container-fluid d-flex">
+                            <img src="${data.message.userimage}" class="userimagechat">
+                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
                         </div>
-                        <p>${file_name}</p>
-                        <hr>
-                        <div class="container">
-                            <audio controls class="w-100">
-                                <source src="${URL.createObjectURL(blob)}">
-                            </audio>   
+                        <div class="audio-container alert alert-light p-2 pb-0">
+                            <div class="d-flex">
+                                <span class="bi bi-file-earmark-music"></span>
+                                <h6 class="m-1">Audio</h6>
+                            </div>
+                            <p>${file_name}</p>
+                            <hr>
+                            <div class="container">
+                                <audio controls class="w-100">
+                                    <source src="${URL.createObjectURL(blob)}">
+                                </audio>   
+                            </div>
                         </div>
                     </div>
                     `;
                 }
 
                 else if (file_type === 'application/pdf') {
-                    ventana.innerHTML += `                    
-                    <div class="file-container alert alert-light p-2 pb-0">
-                        <div class="d-flex">
-                            <span class="bi bi-filetype-pdf"></span>
-                            <h6 class="m-1">Documento PDF</h6>
+                    ventana.innerHTML += `     
+                    <div class="mensaje-sala">
+                        <div class="container-fluid d-flex">
+                            <img src="${data.message.userimage}" class="userimagechat">
+                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
                         </div>
-                        <p>${file_name}</p>
-                        <hr>
-                        <div class="container">
-                            <a href="${URL.createObjectURL(blob)}" download="${file_name}">
-                            <button class="btn btn-outline-dark">Descargar</button>
-                            </a>
+                        <div class="file-container alert alert-light p-2 pb-0">
+                            <div class="d-flex">
+                                <span class="bi bi-filetype-pdf"></span>
+                                <h6 class="m-1">Documento PDF</h6>
+                            </div>
+                            <p>${file_name}</p>
+                            <hr>
+                            <div class="container">
+                                <a href="${URL.createObjectURL(blob)}" download="${file_name}">
+                                <button class="btn btn-outline-dark">Descargar</button>
+                                </a>
+                            </div>
+                            <br>
                         </div>
-                        <br>
                     </div>
                     `;
                 }
 
                 else if (file_type.startsWith('video/')) {
-                    ventana.innerHTML += `                    
-                    <div class="audio-container alert alert-light p-2 pb-0">
-                        <div class="d-flex">
-                            <span class="bi bi-play-btn"></span>
-                            <h6 class="m-1">Video</h6>
+                    ventana.innerHTML += `      
+                    <div class="mensaje-sala">
+                        <div class="container-fluid d-flex">
+                            <img src="${data.message.userimage}" class="userimagechat">
+                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
                         </div>
-                        <p>${file_name}</p>
-                        <div class="alert alert-light p-2 pb-0">
-                            <video class="videos" controls>
-                                <source src="${URL.createObjectURL(blob)}">
-                            </video>                  
+                        <div class="audio-container alert alert-light p-2 pb-0">
+                            <div class="d-flex">
+                                <span class="bi bi-play-btn"></span>
+                                <h6 class="m-1">Video</h6>
+                            </div>
+                            <p>${file_name}</p>
+                            <div class="alert alert-light p-2 pb-0">
+                                <video class="videos" controls>
+                                    <source src="${URL.createObjectURL(blob)}">
+                                </video>                  
+                            </div>
                         </div>
                     </div>
                     `;
                 }
 
                 else if (file_type.startsWith('image/')) {
-                    ventana.innerHTML += `                    
-                    <div class="audio-container alert alert-light p-2 pb-0">
-                        <div class="d-flex">
-                            <span class="bi bi-image"></span>
-                            <h6 class="m-1">Imagen</h6>
+                    ventana.innerHTML += `
+                    <div class="mensaje-sala">
+                        <div class="container-fluid d-flex">
+                            <img src="${data.message.userimage}" class="userimagechat">
+                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
                         </div>
-                        <p>${file_name}</p>
-                        <hr>
-                        <img class="chat-image mb-2" src="${URL.createObjectURL(blob)}" alt="">   
-                    
+                        <div class="audio-container alert alert-light p-2 pb-0">
+                            <div class="d-flex">
+                                <span class="bi bi-image"></span>
+                                <h6 class="m-1">Imagen</h6>
+                            </div>
+                            <p>${file_name}</p>
+                            <hr>
+                            <img class="chat-image mb-2" src="${URL.createObjectURL(blob)}" alt="">   
+                        
+                        </div>
                     </div>
                     `;
                 }
 
                 else {
                     ventana.innerHTML += `
-                    <div class="file-container alert alert-light p-2 pb-0">
-                        <div class="d-flex">
-                            <span class="bi bi-file-earmark-text"></span>
-                            <h6 class="m-1">Archivo</h6>
+                    <div class="mensaje-sala">
+                        <div class="container-fluid d-flex">
+                            <img src="${data.message.userimage}" class="userimagechat">
+                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
                         </div>
-                        <p>${file_name}</p>
-                        <hr>
-                        <div class="container">
-                            <a href="${URL.createObjectURL(blob)}" download="${file_name}">
-                            <button class="btn btn-outline-dark">Descargar</button>
-                            </a>
+                        <div class="file-container alert alert-light p-2 pb-0">
+                            <div class="d-flex">
+                                <span class="bi bi-file-earmark-text"></span>
+                                <h6 class="m-1">Archivo</h6>
+                            </div>
+                            <p>${file_name}</p>
+                            <hr>
+                            <div class="container">
+                                <a href="${URL.createObjectURL(blob)}" download="${file_name}">
+                                <button class="btn btn-outline-dark">Descargar</button>
+                                </a>
+                            </div>
+                            <br>
                         </div>
-                        <br>
                     </div>
                     `;
                 }
-            }
 
-            scrollDown();   
+                scrollDown();
+            }
         }
     };
     
@@ -200,20 +234,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 const media_data = new FormData();
                 media_data.append('multimedia', document.querySelector('#file').files[0]);
 
+                ventana.innerHTML += `
+                <div id="send_notification">
+                    <div class="alert alert-warning center" style="display: flex; justify-content:center;">
+                        <p class="m-0">Tu archivo se está enviando</p>
+                    </div>
+                </div>
+                `;
+
                 fetch(`/mediaroom/${room_id}/`, {
                     method: 'POST',
                     body: media_data
                 })
                 .then(response => response.json())
                 .then(data => {
+
+                    setTimeout(() => {
+                        const alert_send = document.querySelector('#send_notification');
+                        alert_send.style.transition = 'opacity 1s ease-in-out';
+                        alert_send.style.opacity = '0';
+
+                        setTimeout(() => {
+                            alert_send.style.display = 'none';
+                        }, 1000);
+                    }, 2000);
+                    
                     // Acciones que se podrían agregar si el envío multimedia es aceptado.
                     websocket.send(JSON.stringify({
                         'message' : mensaje.value,
                         'id_archivo' : data.id
                     }));
+
+
                 })
                 .catch(error => console.error("Error con la solicitud:", error));
-
 
             }
         } else {
