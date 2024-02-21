@@ -26,16 +26,16 @@ SECRET_KEY = 'django-insecure-be_*2bo2jav35s*&2jisg4@n7$-nz9z!ff-vnqm1ba+59bqrs%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'mail-acu6.onrender.com', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', 'echo-lcqf.onrender.com', '127.0.0.1']
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost',
-    'https://onrender.com'
+    'https://echo-lcqf.onrender.com'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
-    'https://onrender.com'
+    'https://echo-lcqf.onrender.com'
 ]
 
 
