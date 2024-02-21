@@ -97,6 +97,14 @@
     </div>
 </div>
 <hr>
+{% if editar and not room.password %}
+<div class="container">
+    <div class="alert alert-danger">
+        <h4>A tomar en cuenta</h4>
+        <p>No podrás expulsar usuarios mientras tu sala esté sin contraseña.</p>
+    </div>
+</div>
+{% endif %}
 <div class="container">
     <table class="table">
         <thead>
@@ -112,7 +120,7 @@
 
                 <tr>
                     <td><a style="color: black;" href="{% url 'profile' id=username.id %}">{{ username }}</a></td>
-                    {% if not room.creador == username and editar %}
+                    {% if not room.creador == username and editar and not room.password. %}
                         <td><a href="{% url 'deluser' room_id=room.id user_id=username.id %}"><button class="btn btn-outline-danger">Expulsar</button></a></td>
                     {% endif %}
                 </tr>

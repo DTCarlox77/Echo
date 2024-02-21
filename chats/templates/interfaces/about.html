@@ -7,26 +7,30 @@
 
 {% block content %}
 
-<div class="container">
+{% if user.is_authenticated %}
 
-    {% if user.is_authenticated %}
-
-    <div class="navbar mt-2">
-        <div class="container d-flex">
-            <div class="d-flex">
-                <h1 class="m-2"><a style="color: black;" href="{% url 'profile' id=user.id %}"><i class="bi bi-person-fill"></i></a></h1>
-                <h1 class="col-4 m-2">Echo</h1>
-            </div>
-            <div class="d-flex nav-items">
-                <a href="{% url 'create' %}"><h4 class="m-2">Crear</h4></a>
-                <a href="{% url 'rooms' %}"><h4 class="m-2">Salas</h4></a>
-                <a href="{% url 'myrooms' %}"><h4 class="m-2">Pertenecientes</h4></a>
-                <a href="{% url 'logout' %}"><h4 class="m-2">Salir</h4></a>
-            </div>
+<div class="navbar mt-2">
+    <div class="container d-flex">
+        <div class="d-flex">
+            <h1 class="m-2"><a style="color: black;" href="{% url 'profile' id=user.id %}"><i class="bi bi-person-fill"></i></a></h1>
+            <a style="color: black;" href="{% url 'main' %}"><h1 class="col-4 m-2">Echo</h1></a>
+        </div>
+        <div class="d-flex nav-items">
+            <a href="{% url 'create' %}"><h4 class="m-2">Crear</h4></a>
+            <a href="{% url 'rooms' %}"><h4 class="m-2">Salas</h4></a>
+            <a href="{% url 'myrooms' %}"><h4 class="m-2">Pertenecientes</h4></a>
+            <a href="{% url 'logout' %}"><h4 class="m-2">Salir</h4></a>
         </div>
     </div>
-    
-    {% else %}
+</div>
+
+<hr>
+
+{% endif %}
+
+<div class="container">
+
+    {% if not user.is_authenticated %}
 
     <div class="navbar mt-2">
         <div class="navbar">
@@ -38,14 +42,51 @@
             </div>
         </div>
     </div>
+    
+    <hr>
 
     {% endif %}
 
-    <hr>
+    <div class="container border p-4">
+        <h3>¿Quieres utilizar Echo a modo de prueba?</h3>
+        <br>
 
-    <h3>Acerca de:</h3>
+        <h4>Puedes usar cualquiera de las siguientes cuentas (Usuario / Contraseña):</h4>
+        <hr>
+        <ul>
+            <li>Frío | ADMIN</li>
+            <li>Cordelius | ADMIN</li>
+            <li>Tesla | ADMIN</li>
+        </ul>
+        <p>La contraseña de las salas creadas por el usuario EchoBot es: ATP2.0E</p>
+    </div>
+
     <br>
-    <p>Esta aplicación, creada por Carlos Adrián Espinosa Luna, se inspira en la innovadora propuesta de EduChat (proyecto final del curso CS50X) y en la funcionalidad probada y exitosa de Flack (Proyecto 2 de CS50W). Echo ha evolucionado a partir de estas ideas, ofreciendo una experiencia única y mejorada en el ámbito de las redes sociales multimedia.</p>
+
+    <div class="container border p-4">
+        <h3>Acerca de:</h3>
+        <br>
+        <p>Esta aplicación ha sido desarrollada por Carlos Adrián E. Luna (DTCarlox77), tomando como base las ideas de las aplicaciones web de Flack (Project 2 Old CS50W) y Educhat (Personal Final Project CS50X).</p>
+
+        <br>
+        <h4>Notas de la versión 1.5</h4>
+        <hr>
+        <h5>Novedades</h5>
+        <ul>
+            <li>EchoBot posee su propio diseño.</li>
+            <li>Los mensajes emisores aparecerán alineados a la derecha.</li>
+            <li>Barra de búsqueda de salas.</li>
+            <li>Seccionamiento de salas (Para no sobrecargar la página principal).</li>
+            <li>Envío de mensajes en formato Markdown (/md + 'mensaje').</li>
+            <li>Mejoras de rendimiento.</li>
+        </ul>
+        <h5>Errores corregidos</h5>
+        <ul>
+            <li>El mensaje de 'Enviando archivo' ya no se quedará en la pantalla de forma permanente.</li>
+            <li>Las imágenes compartidas ya no causarán desborde en la pantalla de mensajes.</li>
+        </ul>
+    </div>
+
 
     <br>
     <h3>Tecnologías utilizadas:</h3>
@@ -135,9 +176,26 @@
 
     <br>
 
-    <h3>¿Por qué Echo?</h3>
-    <br>
-    <p>El nombre 'Echo' ha sido elegido para reflejar la esencia de la aplicación. Al igual que un eco que resuena y se propaga, Echo representa la idea de que cada interacción, cada conexión y cada contribución en la plataforma resuena y se refleja en la red social. </p>
+    <div class="container border p-4">
+        
+        <h4>¿Por qué Echo?</h4>
+        <hr>
+        <p>El nombre 'Echo' ha sido elegido para reflejar la esencia de la aplicación. Al igual que un eco que resuena y se propaga, Echo representa la idea de que cada interacción, cada conexión y cada contribución en la plataforma resuena y se refleja en la red social.</p>
+
+        <br>
+        <h4>Comandos de la aplicación</h4>
+        <hr>
+        <p>Echo permite la utilización de comandos en las salas de chat, para que se ejecuten de forma correcta estos deberán ir posisionados al inicio de tu mensaje.</p>
+        <ul>
+            <li>/eb - Utiliza la inteligencia artificial integrada. Esta toma la información de la API de <a href="https://openai.com/">OpenAI</a>.</li>
+            <li>/md - Envía mensajes en formato de Markdown.</li>
+        </ul>
+
+        <br>
+        <h4>Mensajes en la sala</h4>
+        <hr>
+        <p>Cada sala tiene una capacidad máxima de 30 mensajes. Una vez que se alcanza este límite, cualquier mensaje adicional será eliminado de manera permanente para mantener la cantidad de mensajes en la sala dentro del límite establecido.</p>
+    </div>
 
     <br>
     <br>
@@ -145,7 +203,7 @@
 
 <footer class="bg-dark text-light text-center py-4">
     <div class="container">
-        <p>&copy; 2024 Echo - CS50W Project 5: Capstone</p>
+        <p>&copy; 2024 Echo V 1.5</p>
         <p>Sígueme en mis redes:</p>
         <a href="https://reddit.com/user/DT-Carlox77" class="text-light me-3"><i class="bi bi-reddit"></i></a>
         <a href="#" class="text-light me-3"><i class="bi bi-twitter"></i></a>

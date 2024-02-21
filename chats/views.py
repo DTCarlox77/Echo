@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout, login
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
+import re
 
 from .models import CustomUser, Salas, SalasUsuarios, Mensajes
 
@@ -23,29 +24,46 @@ def register_view(request):
         return redirect('rooms')  
     
     message = ''
+    respaldo = ''
 
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         image = request.POST.get('imagen')
         
+        respaldo = {
+            'username' : username,
+            'password' : password,
+            'image' : image
+        }
+        
         if username and password:
-            try:
-                user = CustomUser.objects.create_user(username=username, password=password, image=(image if image else 'https://cdn0.iconfinder.com/data/icons/unigrid-flat-human-vol-2/90/011_101_anonymous_anonym_hacker_vendetta_user_human_avatar-512.png'))
-                user.save()
-                return redirect('login')
             
-            except Exception as e:
-                if 'UNIQUE constraint' in str(e):
-                    message = 'Nombre de usuario no dispobible'
-                else:
-                    message = 'Error de registro'
+            if len(password) < 5:
+                message = 'Tú contraseña es demasiado corta.'
+
+            elif not username.isalnum():
+                message = 'El nombre de usuario admite únicamente carácteres alfanuméricos.'
+                
+            else:    
+                
+                try:
+                    user = CustomUser.objects.create_user(username=username, password=password, image=(image if image else 'https://cdn0.iconfinder.com/data/icons/unigrid-flat-human-vol-2/90/011_101_anonymous_anonym_hacker_vendetta_user_human_avatar-512.png'))
+                    user.save()
+                    return redirect('login')
+                
+                except Exception as e:
+                    if 'UNIQUE constraint' in str(e):
+                        message = 'Nombre de usuario no dispobible.'
+                    else:
+                        message = 'Error de registro.'
                 
         else:
             message = 'Complete todos los campos.'
     
     return render(request, 'registration/register.html', {
-        'message' : message if message else None
+        'message' : message if message else None,
+        'respaldo' : respaldo
     })
 
 def login_view(request):
@@ -90,7 +108,6 @@ def rooms_view(request):
         'public': True
     })
 
-
 @login_required
 def myrooms(request):
     
@@ -122,16 +139,25 @@ def create_room(request):
         if nombre:
             salas = Salas.objects.filter(nombre=nombre).count()
             if salas == 0:
-                try:
-                    nueva_sala = Salas(nombre=nombre, descripcion=(descripcion if descripcion else 'Sin descripción.'), password=(password if password else None), creador=request.user, imagen=(imagen if imagen else 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg'))
-                    nueva_sala.save()
+                patron = r'^[a-zA-Z0-9\s]+$'
+                
+                if len(nombre) > 10:
+                    message = 'El nombre de la sala es demasiado largo.'
+                
+                elif not re.match(patron, nombre):
+                    message = 'No se permite el uso de carácteres no alfanuméricos para nombrar una sala.'
                     
-                    unir = SalasUsuarios(usuario=request.user, sala=nueva_sala)
-                    unir.save()
-                    return redirect('rooms')
-                    
-                except Exception as e:
-                    message = f'Algo salió mal: {e}'
+                else:
+                    try:
+                        nueva_sala = Salas(nombre=nombre, descripcion=(descripcion if descripcion else 'Sin descripción.'), password=(password if password else None), creador=request.user, imagen=(imagen if imagen else 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg'))
+                        nueva_sala.save()
+                        
+                        unir = SalasUsuarios(usuario=request.user, sala=nueva_sala)
+                        unir.save()
+                        return redirect('rooms')
+                        
+                    except Exception as e:
+                        message = f'Algo salió mal: {e}'
             else:
                 message = 'El nombre no se encuentra disponible.'
         else:

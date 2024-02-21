@@ -58,24 +58,53 @@ document.addEventListener('DOMContentLoaded', () => {
             bajar_sroll();
         }
 
-        // Sí entra un objeto de tipo mensaje.
-        if (data.message) {
+        // El contenido será el objeto a renderizar, data es la información enviada por el servidor.
+        function generar_mensaje(contenido, data) {
+            const propio = (data.message.username === username_dom.textContent);
 
-            // Si entra un mensaje normal.
-            if (data.message.message && !data.message.expelled) {
+            if (propio) {                
+                ventana.innerHTML += `
+                <div class="mensaje-sala">
+                    <div class="container-fluid d-flex" style="flex-direction: row-reverse;">
+                        <img src="${data.message.userimage}" class="userimagechat" >
+                        <div style="margin-right: 10px;"><a href="/profile/${data.message.id}" style="color: black;"><h6>${data.message.username}</h6></a> <p>${data.message.fecha}</p></div>
+                    </div>
+                    ${contenido}
+                </div>
+                `;
+            }
 
-                const mensajeTipo = data.message.username === username_dom.textContent ? 'alert-info' : 'alert-light';
+            else {
                 ventana.innerHTML += `
                 <div class="mensaje-sala">
                     <div class="container-fluid d-flex">
                         <img src="${data.message.userimage}" class="userimagechat">
-                        <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                        <div><a href="/profile/${data.message.id}" style="color: black;"><h6>${data.message.username}</h6></a> <p>${data.message.fecha}</p></div>
                     </div>
-                    <div class="alert ${mensajeTipo} p-2 pb-0">
-                        <p>${data.message.message}</p>                    
-                    </div>
+                    ${contenido}
                 </div>
                 `;
+            }
+        }
+
+        // Sí entra un objeto de tipo mensaje.
+        if (data.message) {
+
+            let contenido;
+
+            const mensaje_tipo = data.message.username === username_dom.textContent ? 'alert-info' : 'alert-light';
+            const alineacion = data.message.username === username_dom.textContent ? 'right' : 'left';
+
+            // Si entra un mensaje normal.
+            if (data.message.message && !data.message.expelled && !data.message.markdown) {
+                
+                contenido = `
+                    <div class="alert ${mensaje_tipo} p-2 pb-0">
+                        <p style="text-align: ${alineacion};">${data.message.message}</p>   
+                    </div>
+                `;
+
+                generar_mensaje(contenido, data);
 
                 const mensajes = ventana.querySelectorAll('.mensaje-sala');
                 if (mensajes.length > 20) {
@@ -85,18 +114,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 bajar_sroll();  
             }
 
+            else if (data.message.markdown) {
+
+                contenido = `
+                    <div class="alert alert-light p-2 pb-0">
+                        <div class="d-flex">
+                            <span class="bi bi-markdown"></span>
+                            <h6 class="m-1">Markdown</h6>
+                        </div>
+                        <hr>
+                        <div class="container markdown">
+                            ${data.message.message} 
+                        </div>
+                    </div>
+                `;
+
+                generar_mensaje(contenido, data);
+
+                bajar_sroll();
+            }
+
             // Sí entra un mensaje de un usuario que ha sido expulsado.
             else if (data.message.expelled) {
                 ventana.innerHTML += `
-                <div class="mensaje-sala">
-                    <div class="container-fluid d-flex">
-                        <img src="${data.message.userimage}" class="userimagechat">
-                        <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                    <div class="mensaje-sala">
+                        <div class="container-fluid d-flex">
+                            <img src="${data.message.userimage}" class="userimagechat">
+                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                        </div>
+                        <div class="alert alert-danger p-2 pb-0">
+                            <p>${data.message.message}</p>                    
+                        </div>
                     </div>
-                    <div class="alert alert-danger p-2 pb-0">
-                        <p>${data.message.message}</p>                    
-                    </div>
-                </div>
                 `;
 
                 mensaje.disabled = true;
@@ -119,12 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 try {
                     if (file_type.startsWith('audio/')) {
-                        ventana.innerHTML += `
-                        <div class="mensaje-sala">
-                            <div class="container-fluid d-flex">
-                                <img src="${data.message.userimage}" class="userimagechat">
-                                <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                            </div>
+
+                        contenido = `
                             <div class="audio-container alert alert-light p-2 pb-0">
                                 <div class="d-flex">
                                     <span class="bi bi-file-earmark-music"></span>
@@ -138,17 +183,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </audio>   
                                 </div>
                             </div>
-                        </div>
                         `;
                     }
     
                     else if (file_type === 'application/pdf') {
-                        ventana.innerHTML += `     
-                        <div class="mensaje-sala">
-                            <div class="container-fluid d-flex">
-                                <img src="${data.message.userimage}" class="userimagechat">
-                                <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                            </div>
+
+                        contenido = `     
                             <div class="file-container alert alert-light p-2 pb-0">
                                 <div class="d-flex">
                                     <span class="bi bi-filetype-pdf"></span>
@@ -163,17 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                                 <br>
                             </div>
-                        </div>
                         `;
                     }
     
                     else if (file_type.startsWith('video/')) {
-                        ventana.innerHTML += `      
-                        <div class="mensaje-sala">
-                            <div class="container-fluid d-flex">
-                                <img src="${data.message.userimage}" class="userimagechat">
-                                <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                            </div>
+                        contenido = `      
                             <div class="audio-container alert alert-light p-2 pb-0">
                                 <div class="d-flex">
                                     <span class="bi bi-play-btn"></span>
@@ -186,17 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </video>                  
                                 </div>
                             </div>
-                        </div>
                         `;
                     }
     
                     else if (file_type.startsWith('image/')) {
-                        ventana.innerHTML += `
-                        <div class="mensaje-sala">
-                            <div class="container-fluid d-flex">
-                                <img src="${data.message.userimage}" class="userimagechat">
-                                <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                            </div>
+                        contenido = `
                             <div class="audio-container alert alert-light p-2 pb-0">
                                 <div class="d-flex">
                                     <span class="bi bi-image"></span>
@@ -205,19 +233,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <p>${file_name}</p>
                                 <hr>
                                 <img class="chat-image mb-2" src="${URL.createObjectURL(blob)}" alt="">   
-                            
                             </div>
-                        </div>
                         `;
                     }
     
                     else {
-                        ventana.innerHTML += `
-                        <div class="mensaje-sala">
-                            <div class="container-fluid d-flex">
-                                <img src="${data.message.userimage}" class="userimagechat">
-                                <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                            </div>
+
+                        contenido = `
                             <div class="file-container alert alert-light p-2 pb-0">
                                 <div class="d-flex">
                                     <span class="bi bi-file-earmark-text"></span>
@@ -232,18 +254,15 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                                 <br>
                             </div>
-                        </div>
                         `;
+
                     }
+                    generar_mensaje(contenido, data);
                     bajar_sroll();
 
                 } catch (error) {
-                    ventana.innerHTML += `
-                    <div class="mensaje-sala">
-                        <div class="container-fluid d-flex">
-                            <img src="${data.message.userimage}" class="userimagechat">
-                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                        </div>
+
+                    contenido = `
                         <div class="file-container alert alert-light p-2 pb-0">
                             <div class="d-flex">
                                 <span class="bi bi-file-binary"></span>
@@ -258,8 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <br>
                         </div>
-                    </div>
                     `;
+                    generar_mensaje(contenido, data);
                     bajar_sroll();
                 }
             }
@@ -327,12 +346,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Opciones para el envío de mensajes al servidor a través del socket.
     enviar_mensaje.addEventListener('click', nuevo_mensaje);
-    mensaje.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            nuevo_mensaje();
-        }
-    });
+
+    // Envío por enter deshabilitado.
+    // mensaje.addEventListener('keydown', (e) => {
+    //     if (e.key === 'Enter' && !e.shiftKey) {
+    //         e.preventDefault();
+    //         nuevo_mensaje();
+    //     }
+    // });
 
     // Configuraciones del envío de multimedia.
     const compartir = document.querySelector('#multimedia');
