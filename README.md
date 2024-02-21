@@ -1,2 +1,2 @@
 # Echo
-CS50W Finnal Project 
+CS50W Final Project 
