@@ -33,6 +33,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // Serialización de la información.
         const data = JSON.parse(e.data);
 
+        // Sí entra un objeto de tipo sistema.
+        if (data.sistema) {
+            
+            const color = (parseInt(data.evento) === 0) ? 'alert-success' : 'alert-danger';
+            ventana.innerHTML += `
+            <div id="active_user_notification">
+                <div class="alert ${color} center" style="display: flex; justify-content:center;">
+                    <p class="m-0">${data.sistema}</p>
+                </div>
+            </div>
+            `;
+
+            setTimeout(() => {
+                const alert_send = document.querySelector('#active_user_notification');
+                alert_send.style.transition = 'opacity 1s ease-in-out';
+                alert_send.style.opacity = '0';
+
+                setTimeout(() => {
+                    alert_send.style.display = 'none';
+                }, 1000);
+            }, 2000);
+
+            bajar_sroll();
+        }
+
         // Sí entra un objeto de tipo mensaje.
         if (data.message) {
 
@@ -53,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 const mensajes = ventana.querySelectorAll('.mensaje-sala');
-                console.log(mensajes);
                 if (mensajes.length > 20) {
                     mensajes[0].remove();
                 }

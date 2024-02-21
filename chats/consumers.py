@@ -34,6 +34,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # El usuario ha sido aceptado.
         await self.accept()
+        
+        # Notificar la unión.
+        await self.system_message_send(f'{self.user.username} se ha conectado.', 0)
 
         # Carga y envía los mensajes anteriores de la sala al usuario.
         await self.cargar_mensajes_previos()
@@ -44,6 +47,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        
+        await self.system_message_send(f'{self.user.username} se ha desconectado.', 1)
 
     # Mensaje recibido desde el cliente.
     async def receive(self, text_data=None, alert_data=None, bytes_data=None):
@@ -121,6 +126,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'expelled' : True
                     }
                 }))
+    
+    # Método para informar en la sala los eventos de unión.    
+    async def system_message_send(self, message, event):
+        
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type' : 'system_message',
+                'message' : message,
+                'evento' : event,
+            }
+        )
+                
+    # Método de notificación de eventos de unión.
+    async def system_message(self, event):
+        
+        await self.send(text_data=json.dumps({
+            'sistema' : event['message'],
+            'evento' : event['evento'],
+            'username' : self.user.username
+        }))
             
     # Envía los mensajes al cliente.
     async def chat_message(self, event):
