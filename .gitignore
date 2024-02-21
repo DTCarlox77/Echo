@@ -1,3 +1,4 @@
 pyenv
 .env
 multimedia
+__pycache__
