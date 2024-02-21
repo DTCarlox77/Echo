@@ -1,4 +1,4 @@
-{% extends 'layouts/main.html' %}
+{% extends 'layouts/notlogin.html' %}
 
 {% load static %}
 
@@ -8,18 +8,6 @@
 {% block content %}
 
 <div class="container">
-
-    <div class="navbar mt-2">
-        <div class="navbar">
-            <div class="d-flex nav-items">
-                <a href="{% url 'create' %}"><h4 class="m-2">Echo</h4></a>
-                <a href="{% url 'rooms' %}"><h4 class="m-2">Iniciar sesión</h4></a>
-                <a href="{% url 'myrooms' %}"><h4 class="m-2">Registro</h4></a>
-                <a href="{% url 'myrooms' %}"><h4 class="m-2">Acerca de</h4></a>
-            </div>
-        </div>
-    </div>
-    <hr>
     
     <div class="container navbar barra mt-4">
         <h1>Registro</h1>
@@ -49,5 +37,7 @@
 
     </div>
 </div>
+<br>
+<br>
 
 {% endblock %}

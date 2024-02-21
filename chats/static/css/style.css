@@ -162,3 +162,12 @@ a {
     margin-top: 1%;
     align-items: center;
 }
+
+.EchoLogo {
+    width: 100%;
+    max-height: 300px;
+}
+
+.EchoContainer {
+    max-height: 300px;
+}

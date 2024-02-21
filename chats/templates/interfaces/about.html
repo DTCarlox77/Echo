@@ -1,0 +1,160 @@
+{% extends 'layouts/main.html' %}
+
+{% load static %}
+
+{% block tittle %}Echo{% endblock %}
+{% block icon %}{% static 'icons/Echoicon.svg' %}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    {% if user.is_authenticated %}
+
+    <div class="navbar mt-2">
+        <div class="container d-flex">
+            <div class="d-flex">
+                <h1 class="m-2"><a style="color: black;" href="{% url 'profile' id=user.id %}"><i class="bi bi-person-fill"></i></a></h1>
+                <h1 class="col-4 m-2">Echo</h1>
+            </div>
+            <div class="d-flex nav-items">
+                <a href="{% url 'create' %}"><h4 class="m-2">Crear</h4></a>
+                <a href="{% url 'rooms' %}"><h4 class="m-2">Salas</h4></a>
+                <a href="{% url 'myrooms' %}"><h4 class="m-2">Pertenecientes</h4></a>
+                <a href="{% url 'logout' %}"><h4 class="m-2">Salir</h4></a>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+
+    <div class="navbar mt-2">
+        <div class="navbar">
+            <div class="d-flex nav-items">
+                <a href="{% url 'main' %}"><h4 class="m-2">Echo</h4></a>
+                <a href="{% url 'rooms' %}"><h4 class="m-2">Iniciar sesión</h4></a>
+                <a href="{% url 'register' %}"><h4 class="m-2">Registro</h4></a>
+                <a href="{% url 'about' %}"><h4 class="m-2">Acerca de</h4></a>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <hr>
+
+    <h3>Acerca de:</h3>
+    <br>
+    <p>Esta aplicación, creada por Carlos Adrián Espinosa Luna, se inspira en la innovadora propuesta de EduChat (proyecto final del curso CS50X) y en la funcionalidad probada y exitosa de Flack (Proyecto 2 de CS50W). Echo ha evolucionado a partir de estas ideas, ofreciendo una experiencia única y mejorada en el ámbito de las redes sociales multimedia.</p>
+
+    <br>
+    <h3>Tecnologías utilizadas:</h3>
+    <br>
+
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="feature">
+                    <img src="https://cdn-images.threadless.com/threadless-media/artist_shops/shops/django/products/220963/original-1582297809-33f3e434bab7633744d99012eec6986d.jpg?v=3&d=eyJvcHMiOiBbWyJ0cmltIiwgW2ZhbHNlLCBmYWxzZV0sIHt9XSwgWyJyZXNpemUiLCBbXSwgeyJ3aWR0aCI6IDk5Ni4wLCAiYWxsb3dfdXAiOiBmYWxzZSwgImhlaWdodCI6IDk5Ni4wfV0sIFsiY2FudmFzX2NlbnRlcmVkIiwgWzEyMDAsIDEyMDBdLCB7ImJhY2tncm91bmQiOiAiMGM0YjMzIn1dLCBbInJlc2l6ZSIsIFs4MDBdLCB7fV0sIFsiY2FudmFzX2NlbnRlcmVkIiwgWzgwMCwgODAwLCAiI2ZmZmZmZiJdLCB7fV0sIFsiZW5jb2RlIiwgWyJqcGciLCA4NV0sIHt9XV0sICJmb3JjZSI6IGZhbHNlLCAib25seV9tZXRhIjogZmFsc2V9" alt="Canal Personalizado" class="m-2 img-fluid rounded-circle">
+                    <br>
+                    <h2>Django</h2>
+                    <hr>
+                    <p>Backend de la aplicación.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature">
+                    <img src="https://brandslogos.com/wp-content/uploads/images/large/python-logo.png" alt="Comparte Multimedia" class="m-2 img-fluid rounded-circle">
+                    <br>
+                    <h2>Python</h2>
+                    <hr>
+                    <p>Control de Django, Channels y la base de datos.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature">
+                    <img src="https://images.ctfassets.net/ee3ypdtck0rk/55TQmw4LAUbzQuWDDUSSr8/33178c17500e05c0151537603fc531fc/channel-layers-ni-django.jpeg?w=500&h=500&fl=progressive&q=50&fm=jpg" alt="Comparte Multimedia" class="m-2 img-fluid rounded-circle">
+                    <br>
+                    <h2>Channels</h2>
+                    <hr>
+                    <p>Genera al websocket de la aplicación.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Unofficial_JavaScript_logo_2.svg/1200px-Unofficial_JavaScript_logo_2.svg.png" alt="Comparte Multimedia" class="m-2 img-fluid rounded-circle">
+                    <br>
+                    <h2>JavaScript</h2>
+                    <hr>
+                    <p>Controla los eventos desde el Frontend.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="feature">
+                    <img src="https://lh3.googleusercontent.com/proxy/N8kl_apPMs1RmJ7khZXSqCP0NazNR0o92FsfK9UrWYc5B1hCzsiuyh1GR13OfeuRic-e01y1VitVOzxvTLLOqkaLZUrR4MdrOSCuVmh3U4cm7jpI-A" alt="Canal Personalizado" class="m-2 img-fluid rounded-circle">
+                    <br>
+                    <h2>Ajax - Jquery</h2>
+                    <hr>
+                    <p>Controla los eventos asíncronos desde el Frontend.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature">
+                    <img src="https://mirayhazlo.com/wp-content/uploads/2018/09/Html5_dise%C3%B1o_web-1.png" alt="Comparte Multimedia" class="m-2 img-fluid rounded-circle">
+                    <br>
+                    <h2>HTML</h2>
+                    <hr>
+                    <p>Creación de las plantillas.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature">
+                    <img src="https://cdn.pixabay.com/photo/2017/08/05/11/16/logo-2582747_1280.png" alt="Comparte Multimedia" class="m-2 img-fluid rounded-circle">
+                    <br>
+                    <h2>CSS</h2>
+                    <hr>
+                    <p>Estilos personalizados en las plantillas HTML.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature">
+                    <img src="https://academianumen.com.ar/wp-content/uploads/2024/01/bootstrap-stack.png" alt="Comparte Multimedia" class="m-2 img-fluid rounded-circle">
+                    <br>
+                    <h2>Boostrap</h2>
+                    <hr>
+                    <p>Íconos y estilos para la interfaz.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <h3>¿Por qué Echo?</h3>
+    <br>
+    <p>El nombre 'Echo' ha sido elegido para reflejar la esencia de la aplicación. Al igual que un eco que resuena y se propaga, Echo representa la idea de que cada interacción, cada conexión y cada contribución en la plataforma resuena y se refleja en la red social. </p>
+
+    <br>
+    <br>
+</div>
+
+<footer class="bg-dark text-light text-center py-4">
+    <div class="container">
+        <p>&copy; 2024 Echo - CS50W Project 5: Capstone</p>
+        <p>Sígueme en mis redes:</p>
+        <a href="https://reddit.com/user/DT-Carlox77" class="text-light me-3"><i class="bi bi-reddit"></i></a>
+        <a href="#" class="text-light me-3"><i class="bi bi-twitter"></i></a>
+        <a href="https://youtube.com/channel/UCnUWCagaLT2qAK1Rl2VAfzQ" target="_blank" class="text-light me-3"><i class="bi bi-youtube"></i></a>
+        <a href="https://github.com/DTCarlox77" target="_blank" class="text-light"><i class="bi bi-github"></i></a>
+        <br>
+        <br>
+        <p>Aplicación web desarrollada por DTCarlox77</p>
+    </div>
+</footer>
+
+{% endblock %}

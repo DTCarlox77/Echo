@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     mensajes[0].remove();
                 }
             
-                scrollDown();  
+                bajar_sroll();  
             }
 
             // Sí entra un mensaje de un usuario que ha sido expulsado.
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 mensaje.disabled = true;
                 enviar_mensaje.disabled = true;
                 archivo.disabled = true;
-                scrollDown();
+                bajar_sroll();
             }
 
             else if (data.message.file_content) {
@@ -93,32 +93,128 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Creación de un Blob (objeto de datos binarios) a partir del contenido del archivo.
                 const blob = new Blob([Uint8Array.from(file_content, c => c.charCodeAt(0))], { type: file_type });
 
-                if (file_type.startsWith('audio/')) {
-                    ventana.innerHTML += `
-                    <div class="mensaje-sala">
-                        <div class="container-fluid d-flex">
-                            <img src="${data.message.userimage}" class="userimagechat">
-                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                        </div>
-                        <div class="audio-container alert alert-light p-2 pb-0">
-                            <div class="d-flex">
-                                <span class="bi bi-file-earmark-music"></span>
-                                <h6 class="m-1">Audio</h6>
+                try {
+                    if (file_type.startsWith('audio/')) {
+                        ventana.innerHTML += `
+                        <div class="mensaje-sala">
+                            <div class="container-fluid d-flex">
+                                <img src="${data.message.userimage}" class="userimagechat">
+                                <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
                             </div>
-                            <p>${file_name}</p>
-                            <hr>
-                            <div class="container">
-                                <audio controls class="w-100">
-                                    <source src="${URL.createObjectURL(blob)}">
-                                </audio>   
+                            <div class="audio-container alert alert-light p-2 pb-0">
+                                <div class="d-flex">
+                                    <span class="bi bi-file-earmark-music"></span>
+                                    <h6 class="m-1">Audio</h6>
+                                </div>
+                                <p>${file_name}</p>
+                                <hr>
+                                <div class="container">
+                                    <audio controls class="w-100">
+                                        <source src="${URL.createObjectURL(blob)}">
+                                    </audio>   
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    `;
-                }
+                        `;
+                    }
+    
+                    else if (file_type === 'application/pdf') {
+                        ventana.innerHTML += `     
+                        <div class="mensaje-sala">
+                            <div class="container-fluid d-flex">
+                                <img src="${data.message.userimage}" class="userimagechat">
+                                <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                            </div>
+                            <div class="file-container alert alert-light p-2 pb-0">
+                                <div class="d-flex">
+                                    <span class="bi bi-filetype-pdf"></span>
+                                    <h6 class="m-1">Documento PDF</h6>
+                                </div>
+                                <p>${file_name}</p>
+                                <hr>
+                                <div class="container">
+                                    <a href="${URL.createObjectURL(blob)}" download="${file_name}">
+                                    <button class="btn btn-outline-dark">Descargar</button>
+                                    </a>
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                        `;
+                    }
+    
+                    else if (file_type.startsWith('video/')) {
+                        ventana.innerHTML += `      
+                        <div class="mensaje-sala">
+                            <div class="container-fluid d-flex">
+                                <img src="${data.message.userimage}" class="userimagechat">
+                                <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                            </div>
+                            <div class="audio-container alert alert-light p-2 pb-0">
+                                <div class="d-flex">
+                                    <span class="bi bi-play-btn"></span>
+                                    <h6 class="m-1">Video</h6>
+                                </div>
+                                <p>${file_name}</p>
+                                <div class="alert alert-light p-2 pb-0">
+                                    <video class="videos" controls>
+                                        <source src="${URL.createObjectURL(blob)}">
+                                    </video>                  
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }
+    
+                    else if (file_type.startsWith('image/')) {
+                        ventana.innerHTML += `
+                        <div class="mensaje-sala">
+                            <div class="container-fluid d-flex">
+                                <img src="${data.message.userimage}" class="userimagechat">
+                                <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                            </div>
+                            <div class="audio-container alert alert-light p-2 pb-0">
+                                <div class="d-flex">
+                                    <span class="bi bi-image"></span>
+                                    <h6 class="m-1">Imagen</h6>
+                                </div>
+                                <p>${file_name}</p>
+                                <hr>
+                                <img class="chat-image mb-2" src="${URL.createObjectURL(blob)}" alt="">   
+                            
+                            </div>
+                        </div>
+                        `;
+                    }
+    
+                    else {
+                        ventana.innerHTML += `
+                        <div class="mensaje-sala">
+                            <div class="container-fluid d-flex">
+                                <img src="${data.message.userimage}" class="userimagechat">
+                                <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
+                            </div>
+                            <div class="file-container alert alert-light p-2 pb-0">
+                                <div class="d-flex">
+                                    <span class="bi bi-file-earmark-text"></span>
+                                    <h6 class="m-1">Archivo</h6>
+                                </div>
+                                <p>${file_name}</p>
+                                <hr>
+                                <div class="container">
+                                    <a href="${URL.createObjectURL(blob)}" download="${file_name}">
+                                    <button class="btn btn-outline-dark">Descargar</button>
+                                    </a>
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                        `;
+                    }
+                    bajar_sroll();
 
-                else if (file_type === 'application/pdf') {
-                    ventana.innerHTML += `     
+                } catch (error) {
+                    ventana.innerHTML += `
                     <div class="mensaje-sala">
                         <div class="container-fluid d-flex">
                             <img src="${data.message.userimage}" class="userimagechat">
@@ -126,8 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="file-container alert alert-light p-2 pb-0">
                             <div class="d-flex">
-                                <span class="bi bi-filetype-pdf"></span>
-                                <h6 class="m-1">Documento PDF</h6>
+                                <span class="bi bi-file-binary"></span>
+                                <h6 class="m-1">Fichero</h6>
                             </div>
                             <p>${file_name}</p>
                             <hr>
@@ -140,78 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     `;
+                    bajar_sroll();
                 }
-
-                else if (file_type.startsWith('video/')) {
-                    ventana.innerHTML += `      
-                    <div class="mensaje-sala">
-                        <div class="container-fluid d-flex">
-                            <img src="${data.message.userimage}" class="userimagechat">
-                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                        </div>
-                        <div class="audio-container alert alert-light p-2 pb-0">
-                            <div class="d-flex">
-                                <span class="bi bi-play-btn"></span>
-                                <h6 class="m-1">Video</h6>
-                            </div>
-                            <p>${file_name}</p>
-                            <div class="alert alert-light p-2 pb-0">
-                                <video class="videos" controls>
-                                    <source src="${URL.createObjectURL(blob)}">
-                                </video>                  
-                            </div>
-                        </div>
-                    </div>
-                    `;
-                }
-
-                else if (file_type.startsWith('image/')) {
-                    ventana.innerHTML += `
-                    <div class="mensaje-sala">
-                        <div class="container-fluid d-flex">
-                            <img src="${data.message.userimage}" class="userimagechat">
-                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                        </div>
-                        <div class="audio-container alert alert-light p-2 pb-0">
-                            <div class="d-flex">
-                                <span class="bi bi-image"></span>
-                                <h6 class="m-1">Imagen</h6>
-                            </div>
-                            <p>${file_name}</p>
-                            <hr>
-                            <img class="chat-image mb-2" src="${URL.createObjectURL(blob)}" alt="">   
-                        
-                        </div>
-                    </div>
-                    `;
-                }
-
-                else {
-                    ventana.innerHTML += `
-                    <div class="mensaje-sala">
-                        <div class="container-fluid d-flex">
-                            <img src="${data.message.userimage}" class="userimagechat">
-                            <div><h6>${data.message.username}</h6> <p>${data.message.fecha}</p></div>
-                        </div>
-                        <div class="file-container alert alert-light p-2 pb-0">
-                            <div class="d-flex">
-                                <span class="bi bi-file-earmark-text"></span>
-                                <h6 class="m-1">Archivo</h6>
-                            </div>
-                            <p>${file_name}</p>
-                            <hr>
-                            <div class="container">
-                                <a href="${URL.createObjectURL(blob)}" download="${file_name}">
-                                <button class="btn btn-outline-dark">Descargar</button>
-                                </a>
-                            </div>
-                            <br>
-                        </div>
-                    </div>
-                    `;
-                }
-
-                scrollDown();
             }
         }
     };
@@ -229,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } else if (multimedia) {
                 reiniciar_multimedia();
-                scrollDown();
+                bajar_sroll();
 
                 const media_data = new FormData();
                 media_data.append('multimedia', document.querySelector('#file').files[0]);
@@ -256,19 +282,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         setTimeout(() => {
                             alert_send.style.display = 'none';
+
+                            // Acciones que se podrían agregar si el envío multimedia es aceptado.
+                            websocket.send(JSON.stringify({
+                                'message' : mensaje.value,
+                                'id_archivo' : data.id
+                            }));
                         }, 1000);
                     }, 2000);
                     
-                    // Acciones que se podrían agregar si el envío multimedia es aceptado.
-                    websocket.send(JSON.stringify({
-                        'message' : mensaje.value,
-                        'id_archivo' : data.id
-                    }));
 
 
                 })
                 .catch(error => console.error("Error con la solicitud:", error));
-
             }
         } else {
             console.error('Conexión websocket no disponible.');
@@ -316,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Permite a la pantalla de mensajes estar siempre al final.
-    function scrollDown() {
+    function bajar_sroll() {
         ventana.scrollTop = ventana.scrollHeight;
         requestAnimationFrame(() => {
             ventana.scrollTop = ventana.scrollHeight;

@@ -18,5 +18,6 @@ urlpatterns = [
     path('profile/<int:id>/', views.profile_view, name='profile'),
     path('rooms/load', views.load_rooms, name='load'),
     path('rooms/search', views.search_view, name='search'),
-    path('rooms/cancel', views.cancel_search, name='cancel')
+    path('rooms/cancel', views.cancel_search, name='cancel'),
+    path('about/', views.about, name='about')
 ]

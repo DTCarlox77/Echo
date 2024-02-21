@@ -111,7 +111,7 @@
             {% for username in users %}
 
                 <tr>
-                    <td>{{ username }}</td>
+                    <td><a style="color: black;" href="{% url 'profile' id=username.id %}">{{ username }}</a></td>
                     {% if not room.creador == username and editar %}
                         <td><a href="{% url 'deluser' room_id=room.id user_id=username.id %}"><button class="btn btn-outline-danger">Expulsar</button></a></td>
                     {% endif %}

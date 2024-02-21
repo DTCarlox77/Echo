@@ -7,9 +7,15 @@ from django.template.loader import render_to_string
 
 from .models import CustomUser, Salas, SalasUsuarios, Mensajes
 
+salas_cargadas = 5
+
 def main(request):
     
-    return redirect('login')
+    return render(request, 'interfaces/echo.html')
+
+def about(request):
+    
+    return render(request, 'interfaces/about.html')
 
 def register_view(request):
     
@@ -77,7 +83,7 @@ def logout_view(request):
 
 @login_required
 def rooms_view(request):
-    rooms = Salas.objects.all().order_by('fecha').reverse()[:3]
+    rooms = Salas.objects.all().order_by('fecha').reverse()[:salas_cargadas]
 
     return render(request, 'interfaces/rooms.html', {
         'rooms': rooms,
@@ -304,9 +310,10 @@ def profile_view(request, id):
 
 def load_rooms(request):
     offset = int(request.GET.get('offset', 0))
+    print(offset)
 
     if offset:
-        salas_adicionales = Salas.objects.all().order_by('fecha').reverse()[offset:offset+3]
+        salas_adicionales = Salas.objects.all().order_by('fecha').reverse()[offset:offset+salas_cargadas]
         salas_html = render_to_string('interfaces/rooms_shortcut.html', {'rooms': salas_adicionales, 'public': True})
 
         return JsonResponse({
@@ -334,13 +341,14 @@ def search_view(request):
             })
 
 def cancel_search(request):
-    rooms = Salas.objects.all().order_by('fecha').reverse()[:3]
+    rooms = Salas.objects.all().order_by('fecha').reverse()[:salas_cargadas]
     
     if rooms:
         salas_html = render_to_string('interfaces/rooms_shortcut.html', {'rooms': rooms, 'public': True})
 
         return JsonResponse({
-            'salas_html': salas_html
+            'salas_html': salas_html,
+            'total_salas' : salas_cargadas
         })
     else:
         return JsonResponse({
