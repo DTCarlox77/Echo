@@ -182,7 +182,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if message.startswith('/md'):
             message = message[3:].strip()
             message = markdown.markdown(message)
-            print(message)
             markdown_validation = True
         
         # Mantiene en control el límite de mensajes.

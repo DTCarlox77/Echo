@@ -54,8 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert_send.style.display = 'none';
                 }, 1000);
             }, 2000);
-
-            bajar_sroll();
         }
 
         // El contenido será el objeto a renderizar, data es la información enviada por el servidor.
@@ -98,21 +96,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Si entra un mensaje normal.
             if (data.message.message && !data.message.expelled && !data.message.markdown) {
-                
-                contenido = `
-                    <div class="alert ${mensaje_tipo} p-2 pb-0">
-                        <p style="text-align: ${alineacion};">${data.message.message}</p>   
-                    </div>
-                `;
 
-                generar_mensaje(contenido, data);
+                // Creación de los contenedores de mensaje de forma manual (para evitar inyección HTML).
+                const contenedor_general = document.createElement('div');
+                contenedor_general.classList.add('mensaje-sala');
+
+                const subcontenedor_informacion = document.createElement('div');
+                const subcontenedor_mensaje = document.createElement('div');
+
+                subcontenedor_informacion.classList.add('container-fluid', 'd-flex');
+                subcontenedor_mensaje.classList.add('alert', mensaje_tipo, 'p-2', 'pb-0');
+
+                const imagen_usuario = document.createElement('img');
+                imagen_usuario.src = data.message.userimage;
+                imagen_usuario.classList.add('userimagechat');
+
+                subcontenedor_informacion.appendChild(imagen_usuario);
+
+                const contenedor_usuario = document.createElement('div');
+                const url_usuario = document.createElement('a');
+                url_usuario.href = `/profile/${data.message.id}`;
+                url_usuario.style.color = 'black';
+
+                const nombre_usuario = document.createElement('h6');
+                nombre_usuario.textContent = data.message.username;
+
+                url_usuario.appendChild(nombre_usuario);
+                contenedor_usuario.appendChild(url_usuario);
+
+                const fecha_mensaje = document.createElement('p');
+                fecha_mensaje.textContent = data.message.fecha;
+
+                contenedor_usuario.appendChild(fecha_mensaje);
+
+                subcontenedor_informacion.appendChild(contenedor_usuario);
+
+                const contenido_mensaje = document.createElement('p');
+                contenido_mensaje.textContent = data.message.message;
+                contenido_mensaje.style.overflowWrap = 'break-word';
+
+                subcontenedor_mensaje.appendChild(contenido_mensaje);
+
+                contenedor_general.appendChild(subcontenedor_informacion);
+                contenedor_general.appendChild(subcontenedor_mensaje);
+
+                if (data.message.username === username_dom.textContent) {
+                    contenido_mensaje.style.textAlign = 'right';
+                    subcontenedor_informacion.style.flexDirection = 'row-reverse';
+                    contenedor_usuario.style.marginRight = '10px';
+                }
+
+                ventana.appendChild(contenedor_general);
 
                 const mensajes = ventana.querySelectorAll('.mensaje-sala');
-                if (mensajes.length > 20) {
+                if (mensajes.length > 30) {
                     mensajes[0].remove();
                 }
-            
-                bajar_sroll();  
             }
 
             else if (data.message.markdown) {
@@ -131,8 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 generar_mensaje(contenido, data);
-
-                bajar_sroll();
             }
 
             // Sí entra un mensaje de un usuario que ha sido expulsado.
@@ -152,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 mensaje.disabled = true;
                 enviar_mensaje.disabled = true;
                 archivo.disabled = true;
-                bajar_sroll();
             }
 
             else if (data.message.file_content) {
@@ -259,7 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     }
                     generar_mensaje(contenido, data);
-                    bajar_sroll();
 
                 } catch (error) {
 
@@ -280,10 +315,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                     generar_mensaje(contenido, data);
-                    bajar_sroll();
                 }
             }
         }
+
+        bajar_sroll();
     };
     
     const mensaje = document.querySelector('#mensaje');
@@ -299,7 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } else if (multimedia) {
                 reiniciar_multimedia();
-                bajar_sroll();
 
                 const media_data = new FormData();
                 media_data.append('multimedia', document.querySelector('#file').files[0]);
@@ -329,8 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             // Acciones que se podrían agregar si el envío multimedia es aceptado.
                             websocket.send(JSON.stringify({
-                                'message' : mensaje.value,
-                                'id_archivo' : data.id
+                                'escribiendo' : 'True'
                             }));
                         }, 1000);
                     }, 2000);

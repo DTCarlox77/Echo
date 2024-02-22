@@ -69,24 +69,19 @@
         <p>Esta aplicación ha sido desarrollada por Carlos Adrián E. Luna (DTCarlox77), tomando como base las ideas de las aplicaciones web de Flack (Project 2 Old CS50W) y Educhat (Personal Final Project CS50X).</p>
 
         <br>
-        <h4>Notas de la versión 1.5</h4>
+        <h4>Versión 1.6</h4>
         <hr>
-        <h5>Novedades</h5>
+        <h5>Novedades:</h5>
         <ul>
-            <li>EchoBot posee su propio diseño.</li>
-            <li>Los mensajes emisores aparecerán alineados a la derecha.</li>
-            <li>Barra de búsqueda de salas.</li>
-            <li>Seccionamiento de salas (Para no sobrecargar la página principal).</li>
-            <li>Envío de mensajes en formato Markdown (/md + 'mensaje').</li>
-            <li>Mejoras de rendimiento.</li>
+            <li>Ahora es posible agregar espacios al nombre de una nueva sala.</li>
         </ul>
-        <h5>Errores corregidos</h5>
+        <h5>Errores corregidos:</h5>
         <ul>
-            <li>El mensaje de 'Enviando archivo' ya no se quedará en la pantalla de forma permanente.</li>
-            <li>Las imágenes compartidas ya no causarán desborde en la pantalla de mensajes.</li>
-        </ul>
+            <li>El texto con etiquetas HTML ya no será interpretado.</li>
+            <li>Se solucionó la falta de scroll en el área de texto para escribir tus mensajes.</li>
+            <li>Las cadenas largas de texto ya no causan desbordamiento.</li>
+        </ul>        
     </div>
-
 
     <br>
     <h3>Tecnologías utilizadas:</h3>
@@ -196,14 +191,107 @@
         <hr>
         <p>Cada sala tiene una capacidad máxima de 30 mensajes. Una vez que se alcanza este límite, cualquier mensaje adicional será eliminado de manera permanente para mantener la cantidad de mensajes en la sala dentro del límite establecido.</p>
     </div>
+    <br>
 
+    <div class="container border p-4">
+        <h3>Registro de actualizaciones</h3>
+        <br>
+        <h4>Versión 1.5</h4>
+        <hr>
+        <h5>Novedades:</h5>
+        <ul>
+            <li>EchoBot ahora tiene su propio diseño distintivo.</li>
+            <li>Los mensajes de los emisores ahora se alinean a la derecha.</li>
+            <li>Agregada barra de búsqueda de salas.</li>
+            <li>Seccionamiento de salas para evitar sobrecargar la página principal.</li>
+            <li>Posibilidad de enviar mensajes en formato Markdown (usando /md + 'mensaje').</li>
+            <li>Mejoras significativas de rendimiento.</li>
+        </ul>
+        <h5>Errores corregidos:</h5>
+        <ul>
+            <li>EchoBot corregido para evitar desconexiones por consultas inválidas, ahora responde con un mensaje de error.</li>
+            <li>Corregido el problema de desbordamiento con imágenes compartidas en la pantalla de mensajes.</li>
+        </ul>        
+
+        <br>
+
+        <h4>Versión 1.4</h4>
+        <hr>
+        <h5>Novedades:</h5>
+        <ul>
+            <li>Agregada la capacidad de redactar una biografía para tu usuario.</li>
+            <li>Mejoras en el diseño global de la aplicación.</li>
+            <li>Diseño responsivo para adaptarse a cualquier dispositivo.</li>
+            <li>Los creadores de salas ahora pueden expulsar usuarios (siempre y cuando la sala esté protegida por una contraseña de acceso).</li>
+        </ul>
+        <h5>Errores corregidos:</h5>
+        <ul>
+            <li>Buscar una sala ya no afectará al botón de carga de salas.</li>
+            <li>Corregido el problema de desbordamiento con archivos multimedia dentro de las salas.</li>
+        </ul>        
+
+        <br>
+
+        <h4>Versión 1.3</h4>
+        <hr>
+        <h5>Novedades:</h5>
+        <ul>
+            <li>Añadida función de búsqueda de salas (en las interfaces pública y personal).</li>
+            <li>Nueva página de perfil de usuario.</li>
+            <li>Accede al perfil de los usuarios tocando su nombre.</li>
+            <li>Visualización de la imagen de perfil de los usuarios en una sala.</li>
+        </ul>
+        <h5>Errores corregidos:</h5>
+        <ul>
+            <li>El mensaje 'Enviando archivo' ya no se quedará en la pantalla de forma permanente.</li>
+        </ul>        
+
+        <br>
+
+        <h4>Versión 1.2</h4>
+        <hr>
+        <h5>Novedades:</h5>
+        <ul>
+            <li>Visualización de un mensaje de progreso durante el envío de archivos.</li>
+            <li>Añadido botón para cargar salas fácilmente.</li>
+            <li>Nueva función para agregar una URL de imagen al perfil.</li>
+        </ul>
+        
+        <br>
+
+        <h4>Versión 1.1</h4>
+        <hr>
+        <h5>Novedades:</h5>
+        <ul>
+            <li>Añadidas nuevas páginas: Echo y Acerca de.</li>
+            <li>Introducida función de inteligencia artificial con el comando '/eb' + consulta.</li>
+            <li>Mejora en la interfaz: los mensajes ahora se ingresan en un área de texto.</li>
+            <li>En las salas se indica si un usuario está activo.</li>
+        </ul>
+        <h5>Errores corregidos:</h5>
+        <ul>
+            <li>Corregido el problema de envío de archivos con extensiones desconocidas.</li>
+        </ul>
+        
+        <br>
+
+        <h4>Versión 1.0</h4>
+        <hr>
+        <h5>Novedades:</h5>
+        <ul>
+            <li>Añadido sistema de registro e inicio de sesión.</li>
+            <li>Posibilidad de crear salas para compartir mensajes con amigos.</li>
+            <li>Nueva función de envío de archivos para compartir multimedia.</li>
+        </ul>        
+
+    </div>
     <br>
     <br>
 </div>
 
 <footer class="bg-dark text-light text-center py-4">
     <div class="container">
-        <p>&copy; 2024 Echo V 1.5</p>
+        <p>&copy; 2024 Echo V 1.6</p>
         <p>Sígueme en mis redes:</p>
         <a href="https://reddit.com/user/DT-Carlox77" class="text-light me-3"><i class="bi bi-reddit"></i></a>
         <a href="#" class="text-light me-3"><i class="bi bi-twitter"></i></a>
