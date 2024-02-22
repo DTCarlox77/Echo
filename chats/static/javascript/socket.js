@@ -61,13 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // El contenido será el objeto a renderizar, data es la información enviada por el servidor.
         function generar_mensaje(contenido, data) {
             const propio = (data.message.username === username_dom.textContent);
+            const id = (data.message.id !== '') ? data.message.id : '';
 
             if (propio) {                
                 ventana.innerHTML += `
                 <div class="mensaje-sala">
                     <div class="container-fluid d-flex" style="flex-direction: row-reverse;">
                         <img src="${data.message.userimage}" class="userimagechat" >
-                        <div style="margin-right: 10px;"><a href="/profile/${data.message.id}" style="color: black;"><h6>${data.message.username}</h6></a> <p>${data.message.fecha}</p></div>
+                        <div style="margin-right: 10px;"><a href="/profile/${id}" style="color: black;"><h6>${data.message.username}</h6></a> <p>${data.message.fecha}</p></div>
                     </div>
                     ${contenido}
                 </div>
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="mensaje-sala">
                     <div class="container-fluid d-flex">
                         <img src="${data.message.userimage}" class="userimagechat">
-                        <div><a href="/profile/${data.message.id}" style="color: black;"><h6>${data.message.username}</h6></a> <p>${data.message.fecha}</p></div>
+                        <div><a href="/profile/${id}" style="color: black;"><h6>${data.message.username}</h6></a> <p>${data.message.fecha}</p></div>
                     </div>
                     ${contenido}
                 </div>
