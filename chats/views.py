@@ -101,11 +101,13 @@ def logout_view(request):
 
 @login_required
 def rooms_view(request):
+    cantidad_salas = Salas.objects.all().count()
     rooms = Salas.objects.all().order_by('fecha').reverse()[:salas_cargadas]
 
     return render(request, 'interfaces/rooms.html', {
         'rooms': rooms,
-        'public': True
+        'public': True,
+        'cantidad' : cantidad_salas
     })
 
 @login_required
@@ -279,10 +281,12 @@ def union(request, id):
         'message': message
     })
 
+import time
 @login_required
 @csrf_exempt
 def mediaroom(request, id):
     
+    time.sleep(5)
     room = get_object_or_404(Salas, id=id)
     autorizacion = SalasUsuarios.objects.filter(usuario=request.user, sala=room).exists()
     
@@ -370,7 +374,7 @@ def cancel_search(request):
     rooms = Salas.objects.all().order_by('fecha').reverse()[:salas_cargadas]
     
     if rooms:
-        salas_html = render_to_string('interfaces/rooms_shortcut.html', {'rooms': rooms, 'public': True})
+        salas_html = render_to_string('components/room_entrance.html', {'rooms': rooms, 'public': True})
 
         return JsonResponse({
             'salas_html': salas_html,

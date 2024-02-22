@@ -1,0 +1,14 @@
+<div class="navbar mt-2">
+    <div class="container d-flex">
+        <div class="d-flex">
+            <h1 class="m-2"><a style="color: black;" href="{% url 'profile' id=user.id %}"><i class="bi bi-person-fill"></i></a></h1>
+            <a style="color: black;" href="{% url 'main' %}"><h1 class="col-4 m-2">Echo</h1></a>
+        </div>
+        <div class="d-flex nav-items">
+            <a href="{% url 'create' %}"><h4 class="m-2">Crear</h4></a>
+            <a href="{% url 'rooms' %}"><h4 class="m-2">Salas</h4></a>
+            <a href="{% url 'myrooms' %}"><h4 class="m-2">Pertenecientes</h4></a>
+            <a href="{% url 'logout' %}"><h4 class="m-2">Salir</h4></a>
+        </div>
+    </div>
+</div>

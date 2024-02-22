@@ -76,7 +76,7 @@
                         <br>
                         <h3>{{ room.sala.nombre }}</h3>
                         <h6 style="color: green;">{% if not room.sala.password %}Sala pública{% endif %}</h6>
-                        <p>Creada por: {{ room.sala.creador }}</p>
+                        <p>Creada por: {{ room.sala.creador }} | {{ room.sala.fecha }} </p>
                         <button style="max-width: 150px; display:flex; justify-content:center;" type="button" class="btn btn-dark"><a style="color: white;" class="m-0 p-1" href="{% url 'room' id=room.sala.id %}">Ingresar</a></button>
                         <br>
                     </div>
@@ -119,10 +119,23 @@
         <br>
     </div>
 
-    {% if rooms %}
+    {% if rooms and cantidad > 5 %}
         <div class="container">
             <div class="navbar">
-                <button class="btn btn-light" id="cargar-mas-btn" style="width: 100%;">Cargar más</button>
+                <button data-exists="true" class="btn btn-light" id="cargar-mas-btn" style="width: 100%;">Cargar más</button>
+            </div>
+
+            <div id="load-rooms" class="alert alert-warning center" style="display: none;">
+                <div class="navbar" style="display: flex; justify-content: center; width: 100%">
+                    <p class="m-0">Cargando salas</p>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="container">
+            <div class="navbar">
+                <button data-exists="false" class="btn btn-light" id="cargar-mas-btn" style="width: 100%;" disabled>No hay más salas.</button>
             </div>
 
             <div id="load-rooms" class="alert alert-warning center" style="display: none;">
@@ -140,10 +153,7 @@
     <h5 class="m-0">{{ user.username }}</h5>
     <br>
 </div>
-<div class="container m-1">
-    <a style="color: black;" href="{% url 'about' %}"><h6>Echo - Versión 1.6</h6></a>
-    <p>Desarrolada por DTCarlox77</p>
-</div>
+{% include 'components/information.html' %}
 
 {% if public %}
     <script src="{% static 'javascript/load.js' %}"></script>

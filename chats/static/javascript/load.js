@@ -7,6 +7,8 @@ $(document).ready(function() {
     const notfound = $('#not-found');
     const cancel = $('#btn-cancel');
     const salas_cargadas = 5;
+
+    const existe = cargar_salas.data('exists') === true;
     
     // Cantidad de salas por defecto.
     let offset = salas_cargadas; 
@@ -16,10 +18,13 @@ $(document).ready(function() {
         cargar_salas.css('display', 'block');
         cancel.css('display', 'none');
         notfound.css('display', 'none');
+        console.log(existe);
 
-        cargar_salas.prop('disabled', false);
-        cargar_salas.text('Cargar más');
-        offset = salas_cargadas; 
+        if (existe) {
+            cargar_salas.prop('disabled', false);
+            cargar_salas.text('Cargar más');
+            offset = salas_cargadas; 
+        }
 
         $.ajax({
             url: 'cancel',

@@ -16,34 +16,12 @@
 <body>
 
     <div class="container">
-        <div class="navbar mt-2">
-            <div class="navbar">
-                <div class="d-flex nav-items">
-                    <a href="{% url 'main' %}"><h4 class="m-2">Echo</h4></a>
-                    <a href="{% url 'rooms' %}"><h4 class="m-2">Iniciar sesión</h4></a>
-                    <a href="{% url 'register' %}"><h4 class="m-2">Registro</h4></a>
-                    <a href="{% url 'about' %}"><h4 class="m-2">Acerca de</h4></a>
-                </div>
-            </div>
-        </div>
-
+        {% include 'components/notloggedinnav.html' %}
         <hr>
     </div>
     {% block content %}
     {% endblock %}
 
-    <footer class="bg-dark text-light text-center py-4">
-        <div class="container">
-            <p>&copy; 2024 Echo V 1.6</p>
-            <p>Sígueme en mis redes:</p>
-            <a href="https://reddit.com/user/DT-Carlox77" class="text-light me-3"><i class="bi bi-reddit"></i></a>
-            <a href="#" class="text-light me-3"><i class="bi bi-twitter"></i></a>
-            <a href="https://youtube.com/channel/UCnUWCagaLT2qAK1Rl2VAfzQ" target="_blank" class="text-light me-3"><i class="bi bi-youtube"></i></a>
-            <a href="https://github.com/DTCarlox77" target="_blank" class="text-light"><i class="bi bi-github"></i></a>
-            <br>
-            <br>
-            <p>Aplicación web desarrollada por DTCarlox77</p>
-        </div>
-    </footer>
+    {% include 'components/footer.html' %}
 </body>
 </html>

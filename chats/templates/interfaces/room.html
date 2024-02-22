@@ -7,10 +7,6 @@
 
 {% block content %}
 
-<style>
-
-</style>
-
 <div class="navbar mt-0">
     <div class="d-flex nav-items center main-nav-container">
         <a class="nombre" href="{% url 'edit' id=room.id %}"><h2 class="">{{ room.nombre | slice:":15" }}</h2></a>

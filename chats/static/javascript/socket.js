@@ -156,20 +156,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
             else if (data.message.markdown) {
 
-                contenido = `
-                    <div class="alert alert-light p-2 pb-0">
-                        <div class="d-flex">
-                            <span class="bi bi-markdown"></span>
-                            <h6 class="m-1">Markdown</h6>
-                        </div>
-                        <hr>
-                        <div class="container markdown">
-                            ${data.message.message} 
-                        </div>
-                    </div>
-                `;
+                if (window.DOMPurify) {
+                    const contenido_limpio = DOMPurify.sanitize(data.message.message);
 
-                generar_mensaje(contenido, data);
+                    contenido = `
+                        <div class="alert alert-light p-2 pb-0">
+                            <div class="d-flex">
+                                <span class="bi bi-markdown"></span>
+                                <h6 class="m-1">Markdown</h6>
+                            </div>
+                            <hr>
+                            <div class="container markdown">
+                                ${contenido_limpio} 
+                            </div>
+                        </div>
+                    `;
+
+                    generar_mensaje(contenido, data);
+                    
+                } else {
+                    contenido = `
+                        <div class="alert alert-light p-2 pb-0">
+                            <div class="d-flex">
+                                <span class="bi bi-markdown"></span>
+                                <h6 class="m-1">Markdown</h6>
+                            </div>
+                            <hr>
+                            <div class="container markdown">
+                                <code>No se ha podido renderizar el contenido Markdown.<code>
+                            </div>
+                        </div>
+                    `;
+
+                    generar_mensaje(contenido, data);
+                }
             }
 
             // Sí entra un mensaje de un usuario que ha sido expulsado.
@@ -335,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } else if (multimedia) {
                 reiniciar_multimedia();
+                archivo.disabled = true;
 
                 const media_data = new FormData();
                 media_data.append('multimedia', document.querySelector('#file').files[0]);
@@ -347,6 +368,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 `;
 
+                const alert_send = document.querySelector('#send_notification');
+
                 fetch(`/mediaroom/${room_id}/`, {
                     method: 'POST',
                     body: media_data
@@ -355,12 +378,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
 
                     setTimeout(() => {
-                        const alert_send = document.querySelector('#send_notification');
                         alert_send.style.transition = 'opacity 1s ease-in-out';
                         alert_send.style.opacity = '0';
-
+                        
                         setTimeout(() => {
                             alert_send.style.display = 'none';
+                            alert_send.remove();
 
                             // Acciones que se podrían agregar si el envío multimedia es aceptado.
                             websocket.send(JSON.stringify({
@@ -369,9 +392,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             }));
                         }, 1000);
                     }, 2000);
+                    archivo.value = '';
+                    archivo.disabled = false;
                     bajar_sroll();                    
                 })
-                .catch(error => console.error("Error con la solicitud:", error));
+                .catch(error => {
+                    alert_send.remove();
+                    console.error("Error con la solicitud:", error);
+                });
                 bajar_sroll();
             }
         } else {
