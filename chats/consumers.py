@@ -275,7 +275,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'file_content' : file_base64,
                             'file_type' : file_type,
                             'file_name' : os.path.basename(mensaje['archivo']),
-                            'id' : self.user.id
+                            'id' : mensaje['emisor__id']
                         }
                     }))
                     
@@ -289,7 +289,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'username': mensaje['emisor__username'],
                             'userimage' : mensaje['emisor__image'],
                             'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
-                            'id' : self.user.id
+                            'id' : mensaje['emisor__id']
                         }
                     }))
                 
@@ -298,14 +298,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 message = mensaje['mensaje']
                 userimage = mensaje['emisor__image']
                 markdown_validation = False
-                id = self.user.id
                 
                 if message.startswith('/EB:CODE:18-Respuesta de EchoBot:'):
                     username = 'Echobot'
                     userimage = 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg'
                     message = markdown.markdown(message[34:])
                     markdown_validation = True
-                    id = None
                 
                 if message.startswith('/md'):
                     message = message[3:].strip()
@@ -319,14 +317,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'userimage' : userimage,
                         'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
                         'markdown' : markdown_validation,
-                        'id' : id
+                        'id' : mensaje['emisor__id']
                     }
                 }))
     
     # Carga los mensajes desde la base de datos.
     @database_sync_to_async
     def obtener_mensajes(self):
-        mensajes = list(Mensajes.objects.filter(sala__id=int(self.room_name)).order_by('fecha').values('mensaje', 'emisor__username', 'fecha', 'emisor__image', 'archivo'))
+        mensajes = list(Mensajes.objects.filter(sala__id=int(self.room_name)).order_by('fecha').values('mensaje', 'emisor__username', 'fecha', 'emisor__image', 'archivo', 'emisor__id'))
         return mensajes
     
     # Valida la relación entre el usuario y el grupo de chats.
