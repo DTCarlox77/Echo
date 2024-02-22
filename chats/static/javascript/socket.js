@@ -364,13 +364,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             // Acciones que se podrían agregar si el envío multimedia es aceptado.
                             websocket.send(JSON.stringify({
-                                'escribiendo' : 'True'
+                                'message' : mensaje.value,
+                                'id_archivo' : data.id
                             }));
                         }, 1000);
-                    }, 2000);
-                    
-
-
+                    }, 2000);                    
                 })
                 .catch(error => console.error("Error con la solicitud:", error));
             }
