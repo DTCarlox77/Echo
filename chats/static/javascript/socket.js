@@ -368,9 +368,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 'id_archivo' : data.id
                             }));
                         }, 1000);
-                    }, 2000);                    
+                    }, 2000);
+                    bajar_sroll();                    
                 })
                 .catch(error => console.error("Error con la solicitud:", error));
+                bajar_sroll();
             }
         } else {
             console.error('Conexión websocket no disponible.');

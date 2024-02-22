@@ -142,7 +142,7 @@ a {
     .cuerpo {
         display: flex;
         flex-direction: column;
-        height: 72vh;
+        height: 68vh;
         overflow-y: scroll;
         margin-bottom: 30px;
     }
