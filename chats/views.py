@@ -178,7 +178,6 @@ def edit_room(request, id):
     members = [member.usuario for member in relacion]
     
     if room.creador != request.user:
-        print('Hola mundo')
         return render(request, 'interfaces/configure_room.html', {
             'room' : room,
             'message' : message,
@@ -281,12 +280,10 @@ def union(request, id):
         'message': message
     })
 
-import time
 @login_required
 @csrf_exempt
 def mediaroom(request, id):
     
-    time.sleep(5)
     room = get_object_or_404(Salas, id=id)
     autorizacion = SalasUsuarios.objects.filter(usuario=request.user, sala=room).exists()
     
@@ -340,7 +337,6 @@ def profile_view(request, id):
 
 def load_rooms(request):
     offset = int(request.GET.get('offset', 0))
-    print(offset)
 
     if offset:
         salas_adicionales = Salas.objects.all().order_by('fecha').reverse()[offset:offset+salas_cargadas]

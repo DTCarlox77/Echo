@@ -34,9 +34,48 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = JSON.parse(e.data);
 
         // Sí entra un objeto de tipo sistema.
+        if (data.typing) {
+
+            function mostrar_escribiendo() {
+                const contenedor_notificacion = document.querySelector('#typing_user_notification_container');
+                const mensaje_escribiendo = document.querySelector('#typing_user_notification');
+                mensaje_escribiendo.textContent = data.message;
+
+                contenedor_notificacion.style.opacity = 1;
+                contenedor_notificacion.style.transition = 'all 0.5s ease-in-out';
+
+                setTimeout(() => {
+                    contenedor_notificacion.style.opacity = 0;
+
+                    setTimeout(() => {
+                        contenedor_notificacion.remove();
+                    }, 500);
+                    
+                }, 500);
+            }
+
+            try {
+                if (username_dom.textContent !== data.username) {
+                    mostrar_escribiendo();
+                }
+
+            } catch (error) {                
+                ventana.innerHTML += `
+                <div id="typing_user_notification_container">
+                    <div class="alert alert-light center" style="display: flex; justify-content:center;">
+                        <p class="m-0" id="typing_user_notification">${data.message}</p>
+                    </div>
+                </div>
+                `;
+
+                mostrar_escribiendo();
+            }
+        }
+
         if (data.sistema) {
             
             const color = (parseInt(data.evento) === 0) ? 'alert-success' : 'alert-danger';
+
             ventana.innerHTML += `
             <div id="active_user_notification">
                 <div class="alert ${color} center" style="display: flex; justify-content:center;">
@@ -344,6 +383,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const mensaje = document.querySelector('#mensaje');
     const enviar_mensaje = document.querySelector('#enviarmensaje');
+
+    mensaje.addEventListener('keyup', () => {
+        websocket.send(JSON.stringify({
+            'typing' : true,
+            'username' : username_dom.textContent
+        }));
+    });
 
     function nuevo_mensaje () {
         if (websocket.readyState === WebSocket.OPEN) {

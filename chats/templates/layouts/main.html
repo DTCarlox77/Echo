@@ -16,6 +16,19 @@
 
     <title>{% block tittle %}{% endblock %}</title>
 </head>
+<style>
+    @media (prefers-color-scheme: dark) {
+
+        :root {
+            color: white;
+            background-color: #1f1f1f;
+        }
+        
+        body {
+            background-color: #1f1f1f !important;
+        }
+    }
+</style>
 <body>
     {% block content %}
     {% endblock %}

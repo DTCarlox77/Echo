@@ -106,7 +106,7 @@
 </div>
 {% endif %}
 <div class="container">
-    <table class="table">
+    <table class="table custom-table">
         <thead>
             <tr>
                 <th scope="col"><h5>Nombre de usuario</h5></th>
@@ -119,7 +119,7 @@
             {% for username in users %}
 
                 <tr>
-                    <td><a style="color: black;" href="{% url 'profile' id=username.id %}">{{ username }}</a></td>
+                    <td><a class="etiqueta-black" href="{% url 'profile' id=username.id %}">{{ username }}</a></td>
                     {% if not room.creador == username and editar and not room.password. %}
                         <td><a href="{% url 'deluser' room_id=room.id user_id=username.id %}"><button class="btn btn-outline-danger">Expulsar</button></a></td>
                     {% endif %}

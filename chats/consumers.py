@@ -36,7 +36,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # El usuario ha sido aceptado.
         await self.accept()
         
-        # Notificar la unión.
+        # Notificar la unión. (0 representa el estilo del mensaje en el cliente)
         await self.system_message_send(f'{self.user.username} se ha conectado.', 0)
 
         # Carga y envía los mensajes anteriores de la sala al usuario.
@@ -58,95 +58,117 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if text_data:
             text_data_json = json.loads(text_data)
             message = text_data_json.get('message')
+            typing = text_data_json.get('typing')
             id_archivo = text_data_json.get('id_archivo')
-            username = self.user.username
-            userimage = self.user.image
-            
-            # Para validación de la IA.
-            changed_message = message.lower()
-            
-            # Revisa si el emisor pertenece a la sala.
-            validar = await self.validacion_membresia()
 
-            if validar:
+            # En caso de recibir un mensaje.
+            if message or id_archivo:
                 
-                # Envío tradicional de mensajes.
+                username = self.user.username
+                userimage = self.user.image
+            
+                # Para validación de la IA.
+                changed_message = message.lower()
+                
+                # Revisa si el emisor pertenece a la sala.
+                validar = await self.validacion_membresia()
+
+                if validar:
+                    
+                    # Envío tradicional de mensajes.
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            'type': 'chat_message',
+                            'message': message,
+                            'username': username,
+                            'userimage' : userimage,
+                            'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                            'id_archivo' : id_archivo
+                        }
+                    )
+                    
+                    # Almacena el mensaje en la base de datos.
+                    await self.guardar_mensaje(message)
+                    
+                    # Uso de la IA con la api de OpenAI, en las variables de entorno se establecen sus parámetros.
+                    if changed_message.startswith('/eb') and (str(getenv('OPENAI_ACTIVE')) == 'True'): 
+                        
+                        try:
+                            
+                            chat_completion = client.chat.completions.create(
+                                messages = [
+                                    {
+                                        'role' : 'user',
+                                        'content' : message,
+                                    }
+                                ],
+                                model = getenv('OPENAI_ENGINE'),
+                            )
+                            
+                            chat_message = chat_completion.choices[0].message.content
+                            format_message = f'/EB:CODE:18-Respuesta de EchoBot: {chat_message}'
+                            
+                            await self.channel_layer.group_send(
+                                self.room_group_name,
+                                {
+                                    'type': 'chat_message',
+                                    'message': f'/md {chat_message}',
+                                    'username': 'EchoBot',
+                                    'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
+                                    'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                                    'id_archivo' : None,
+                                }
+                            )
+                            
+                            # Almacena el mensaje en la base de datos.
+                            await self.guardar_mensaje(format_message)   
+                        
+                        except Exception as e:
+                            
+                            await self.channel_layer.group_send(
+                                self.room_group_name,
+                                {
+                                    'type': 'chat_message',
+                                    'message': f'/md <p>Error de conexión con OpenAI.</p><br><code>{e}</code>',
+                                    'username': 'EchoBot',
+                                    'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
+                                    'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                                    'id_archivo' : None,
+                                }
+                            )
+                
+                # Si el usuario no pertenece a la sala se le reflejará que fue expulsado.
+                else:
+                    
+                    await self.send(text_data=json.dumps({
+                        'message' : {                        
+                            'message' : 'Has sido expulsado de la sala.',
+                            'username' : 'EchoBot',
+                            'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                            'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
+                            'id_archivo' : None,
+                            'expelled' : True,
+                            'id' : None
+                        }
+                    }))
+                    
+            elif typing:
+                username = text_data_json.get('username')
                 await self.channel_layer.group_send(
-                    self.room_group_name,
+                    self.room_group_name, 
                     {
-                        'type': 'chat_message',
-                        'message': message,
-                        'username': username,
-                        'userimage' : userimage,
-                        'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                        'id_archivo' : id_archivo
+                        'type' : 'typing',
+                        'username' : username
                     }
                 )
                 
-                # Almacena el mensaje en la base de datos.
-                await self.guardar_mensaje(message)
-                
-                # Uso de la IA con la api de OpenAI, en las variables de entorno se establecen sus parámetros.
-                if changed_message.startswith('/eb') and (str(getenv('OPENAI_ACTIVE')) == 'True'): 
-                    
-                    try:
-                        
-                        chat_completion = client.chat.completions.create(
-                            messages = [
-                                {
-                                    'role' : 'user',
-                                    'content' : message,
-                                }
-                            ],
-                            model = getenv('OPENAI_ENGINE'),
-                        )
-                        
-                        chat_message = chat_completion.choices[0].message.content
-                        format_message = f'/EB:CODE:18-Respuesta de EchoBot: {chat_message}'
-                        
-                        await self.channel_layer.group_send(
-                            self.room_group_name,
-                            {
-                                'type': 'chat_message',
-                                'message': f'/md {chat_message}',
-                                'username': 'EchoBot',
-                                'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
-                                'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                                'id_archivo' : None,
-                            }
-                        )
-                        
-                        # Almacena el mensaje en la base de datos.
-                        await self.guardar_mensaje(format_message)   
-                    
-                    except Exception as e:
-                        
-                        await self.channel_layer.group_send(
-                            self.room_group_name,
-                            {
-                                'type': 'chat_message',
-                                'message': f'/md <p>Error de conexión con OpenAI.</p><br><code>{e}</code>',
-                                'username': 'EchoBot',
-                                'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
-                                'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                                'id_archivo' : None,
-                            }
-                        )
-            
-            # Si el usuario no pertenece a la sala se le reflejará que fue expulsado.
-            else:
-                
-                await self.send(text_data=json.dumps({
-                    'message' : {                        
-                        'message' : 'Has sido expulsado de la sala.',
-                        'username' : 'EchoBot',
-                        'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                        'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
-                        'id_archivo' : None,
-                        'expelled' : True,
-                        'id' : None
-                    }
-                }))
+    async def typing(self, event):
+        await self.send(text_data=json.dumps({
+            'typing' : True,
+            'message' : f'{event['username']} está escribiendo',
+            'username' : event['username']
+        }))
     
     # Método para informar en la sala los eventos de unión.    
     async def system_message_send(self, message, event):
@@ -156,7 +178,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type' : 'system_message',
                 'message' : message,
-                'evento' : event,
+                'evento' : event
             }
         )
                 
@@ -166,7 +188,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'sistema' : event['message'],
             'evento' : event['evento'],
-            'username' : self.user.username
+            'usuario' : self.user.username
         }))
             
     # Envía los mensajes al cliente.
