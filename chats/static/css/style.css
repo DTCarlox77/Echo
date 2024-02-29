@@ -215,7 +215,7 @@ a {
 }
 
 .etiqueta-white {
-    color: black;
+    color: white;
 }
 
 #Edark {
@@ -224,6 +224,10 @@ a {
 
 #Elight {
     display: block;
+}
+
+.file_name {
+    overflow-wrap: break-word;
 }
 
 @media (prefers-color-scheme: dark) {

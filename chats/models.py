@@ -13,6 +13,7 @@ class CustomUser(AbstractUser):
 class Salas(models.Model):
 
     nombre = models.CharField(max_length=255, null=False)
+    codigo = models.CharField(max_length=16, unique=True)
     descripcion = models.TextField()
     imagen = models.CharField(max_length=255, default='https://liquipedia.net/commons/images/1/1a/Brawl_Kit.png')
     password = models.CharField(max_length=100, null=True)

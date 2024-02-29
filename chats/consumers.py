@@ -10,6 +10,7 @@ import base64
 import mimetypes
 import os
 import markdown
+from . import regularmarkdown
 
 load_dotenv()
 
@@ -60,6 +61,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message = text_data_json.get('message')
             typing = text_data_json.get('typing')
             id_archivo = text_data_json.get('id_archivo')
+            delete = text_data_json.get('delete')
+            id_mensaje = text_data_json.get('id_mensaje')
 
             # En caso de recibir un mensaje.
             if message or id_archivo:
@@ -163,6 +166,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }
                 )
                 
+            # elif delete:
+                
+            #     await self.del_mensaje(id_mensaje=int(id_mensaje))
+                
     async def typing(self, event):
         await self.send(text_data=json.dumps({
             'typing' : True,
@@ -201,9 +208,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         validar = await self.validacion_membresia()
         markdown_validation = False
         
-        if message.startswith('/md'):
+        if message.lower().startswith('/md'):
             message = message[3:].strip()
             message = markdown.markdown(message)
+            markdown_validation = True
+            
+        if message.lower().startswith('/rmd'):
+            message = regularmarkdown.procesar_expresion(message)
             markdown_validation = True
         
         # Mantiene en control el límite de mensajes.
@@ -296,7 +307,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'file_content' : file_base64,
                             'file_type' : file_type,
                             'file_name' : os.path.basename(mensaje['archivo']),
-                            'id' : mensaje['emisor__id']
+                            'id' : mensaje['emisor__id'],
+                            'id_mensaje' : mensaje['id']
                         }
                     }))
                     
@@ -310,7 +322,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'username': mensaje['emisor__username'],
                             'userimage' : mensaje['emisor__image'],
                             'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
-                            'id' : mensaje['emisor__id']
+                            'id' : mensaje['emisor__id'],
+                            'id_mensaje' : mensaje['id']
                         }
                     }))
                 
@@ -320,15 +333,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 userimage = mensaje['emisor__image']
                 markdown_validation = False
                 
-                if message.startswith('/EB:CODE:18-Respuesta de EchoBot:'):
+                if message.lower().startswith('/EB:CODE:18-Respuesta de EchoBot:'):
                     username = 'Echobot'
                     userimage = 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg'
                     message = markdown.markdown(message[34:])
                     markdown_validation = True
                 
-                if message.startswith('/md'):
+                if message.lower().startswith('/md'):
                     message = message[3:].strip()
                     message = markdown.markdown(message)
+                    markdown_validation = True
+
+                if message.lower().startswith('/rmd'):
+                    message = regularmarkdown.procesar_expresion(message)
                     markdown_validation = True
                 
                 await self.send(text_data=json.dumps({
@@ -338,14 +355,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'userimage' : userimage,
                         'fecha' : mensaje['fecha'].strftime("%d/%m/%Y %H:%M:%S"),
                         'markdown' : markdown_validation,
-                        'id' : mensaje['emisor__id']
+                        'id' : mensaje['emisor__id'],
+                        'id_mensaje' : mensaje['id']
                     }
                 }))
     
     # Carga los mensajes desde la base de datos.
     @database_sync_to_async
     def obtener_mensajes(self):
-        mensajes = list(Mensajes.objects.filter(sala__id=int(self.room_name)).order_by('fecha').values('mensaje', 'emisor__username', 'fecha', 'emisor__image', 'archivo', 'emisor__id'))
+        mensajes = list(Mensajes.objects.filter(sala__id=int(self.room_name)).order_by('fecha').values('id', 'mensaje', 'emisor__username', 'fecha', 'emisor__image', 'archivo', 'emisor__id'))
         return mensajes
     
     # Valida la relación entre el usuario y el grupo de chats.
@@ -361,6 +379,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if id:
             ruta = Mensajes.objects.get(id=int(id))
             return ruta.archivo
+        
+    # @database_sync_to_async
+    # def del_mensaje(self, id_mensaje):
+    #     # Mensaje a eliminar.
+    #     mensaje = Mensajes.objects.get(id=id_mensaje)
+    #     mensaje.delete()
         
     @database_sync_to_async
     def eliminar_mensajes(self):

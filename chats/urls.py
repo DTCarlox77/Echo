@@ -19,5 +19,5 @@ urlpatterns = [
     path('rooms/load', views.load_rooms, name='load'), # Carga de salas adicionales.
     path('rooms/search', views.search_view, name='search'), # Búsqueda de salas.
     path('rooms/cancel', views.cancel_search, name='cancel'), # Cancelar búsqueda de salas.
-    path('about/', views.about, name='about') # Área de información.
+    path('about/', views.about, name='about'), # Área de información.
 ]

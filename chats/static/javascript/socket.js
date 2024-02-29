@@ -131,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let contenido;
 
             const mensaje_tipo = data.message.username === username_dom.textContent ? 'alert-info' : 'alert-light';
-            const alineacion = data.message.username === username_dom.textContent ? 'right' : 'left';
 
             // Si entra un mensaje normal.
             if (data.message.message && !data.message.expelled && !data.message.markdown) {
@@ -176,13 +175,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 subcontenedor_mensaje.appendChild(contenido_mensaje);
 
+                // const del_button = document.createElement('button');
+                // del_button.textContent = 'Eliminar';
+                // del_button.classList.add('btn', 'btn-outline-danger', 'del_button_sk', 'mb-2');
+                // del_button.setAttribute('message_id', data.message.id_mensaje);
+
+                const contenedor_acciones = document.createElement('div');
+                contenedor_acciones.classList.add('d-flex');
+                // contenedor_acciones.appendChild(del_button);
+                
                 contenedor_general.appendChild(subcontenedor_informacion);
                 contenedor_general.appendChild(subcontenedor_mensaje);
+                contenedor_general.appendChild(contenedor_acciones);
+                // contenedor_general.id = data.message.id;
 
                 if (data.message.username === username_dom.textContent) {
                     contenido_mensaje.style.textAlign = 'right';
                     subcontenedor_informacion.style.flexDirection = 'row-reverse';
+                    contenedor_acciones.style.flexDirection = 'row-reverse';
                     contenedor_usuario.style.marginRight = '10px';
+                //    del_button.style.textAlign = 'right';
                 }
 
                 ventana.appendChild(contenedor_general);
@@ -271,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="bi bi-file-earmark-music"></span>
                                     <h6 class="m-1">Audio</h6>
                                 </div>
-                                <p>${file_name}</p>
+                                <p class="file_name">${file_name}</p>
                                 <hr>
                                 <div class="container">
                                     <audio controls class="w-100">
@@ -290,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="bi bi-filetype-pdf"></span>
                                     <h6 class="m-1">Documento PDF</h6>
                                 </div>
-                                <p>${file_name}</p>
+                                <p class="file_name">${file_name}</p>
                                 <hr>
                                 <div class="container">
                                     <a href="${URL.createObjectURL(blob)}" download="${file_name}">
@@ -309,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="bi bi-play-btn"></span>
                                     <h6 class="m-1">Video</h6>
                                 </div>
-                                <p>${file_name}</p>
+                                <p class="file_name">${file_name}</p>
                                 <div class="alert alert-light p-2 pb-0">
                                     <video class="videos" controls>
                                         <source src="${URL.createObjectURL(blob)}">
@@ -326,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="bi bi-image"></span>
                                     <h6 class="m-1">Imagen</h6>
                                 </div>
-                                <p>${file_name}</p>
+                                <p class="file_name">${file_name}</p>
                                 <hr>
                                 <img class="chat-image mb-2" src="${URL.createObjectURL(blob)}" alt="">   
                             </div>
@@ -341,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="bi bi-file-earmark-text"></span>
                                     <h6 class="m-1">Archivo</h6>
                                 </div>
-                                <p>${file_name}</p>
+                                <p class="file_name">${file_name}</p>
                                 <hr>
                                 <div class="container">
                                     <a href="${URL.createObjectURL(blob)}" download="${file_name}">
@@ -363,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <span class="bi bi-file-binary"></span>
                                 <h6 class="m-1">Fichero</h6>
                             </div>
-                            <p>${file_name}</p>
+                            <p class="file_name">${file_name}</p>
                             <hr>
                             <div class="container">
                                 <a href="${URL.createObjectURL(blob)}" download="${file_name}">
@@ -376,6 +388,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     generar_mensaje(contenido, data);
                 }
             }
+
+            // const botones_eliminar = document.querySelectorAll('.del_button_sk');
+            // botones_eliminar.forEach(boton => {
+            //     boton.addEventListener('click', () => {
+            //         const button_id = boton.getAttribute('message_id');
+            //         websocket.send(JSON.stringify({
+            //             'del_message' : 'value'
+            //         }));
+            //     });
+            // });
         }
 
         bajar_sroll();
@@ -383,21 +405,59 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const mensaje = document.querySelector('#mensaje');
     const enviar_mensaje = document.querySelector('#enviarmensaje');
+    let posicion = 0;
 
-    mensaje.addEventListener('keyup', () => {
+    function regular_comandos() {
+        const comandos = [
+            '',
+            '/md ',
+            '/eb ',
+            '/rmd (h1(Mensaje))[Propiedades]'
+        ];
+
+        if (posicion > 3) {
+            posicion = 0;
+        }
+
+        if (posicion < 0) {
+            posicion = 3;
+        }
+
+        if (posicion !== 0) {
+            mensaje.value = comandos[posicion];
+        }
+    }
+
+    mensaje.addEventListener('keyup', (e) => {
         websocket.send(JSON.stringify({
             'typing' : true,
             'username' : username_dom.textContent
         }));
+    
+        if (e.key === 'ArrowUp') {
+            mensaje.value = '';
+            posicion++;
+
+            regular_comandos();
+        }
+        if (e.key == 'ArrowDown') {
+            mensaje.value = '';
+            posicion--;
+
+            regular_comandos();
+        }
     });
+    
 
     function nuevo_mensaje () {
+
         if (websocket.readyState === WebSocket.OPEN) {
             if (mensaje.value !== '' && !multimedia) {                
                 websocket.send(JSON.stringify({
                     'message' : mensaje.value
                 }));
                 mensaje.value = '';
+                posicion = 0;
 
             } else if (multimedia) {
                 reiniciar_multimedia();
@@ -406,16 +466,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const media_data = new FormData();
                 media_data.append('multimedia', document.querySelector('#file').files[0]);
 
-                ventana.innerHTML += `
-                <div id="send_notification">
-                    <div class="alert alert-warning center" style="display: flex; justify-content:center;">
-                        <p class="m-0">Tu archivo se está enviando</p>
-                    </div>
-                </div>
-                `;
-
-                const alert_send = document.querySelector('#send_notification');
-
                 fetch(`/mediaroom/${room_id}/`, {
                     method: 'POST',
                     body: media_data
@@ -423,24 +473,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(response => response.json())
                 .then(data => {
 
-                    setTimeout(() => {
+                    function mostrar_multimedia() {
+                        const alert_send = document.querySelector('#send_notification');
+                        alert_send.style.opacity = 1;
                         alert_send.style.transition = 'opacity 1s ease-in-out';
-                        alert_send.style.opacity = '0';
-                        
+            
                         setTimeout(() => {
-                            alert_send.style.display = 'none';
-                            alert_send.remove();
+                            alert_send.style.opacity = 0;
+            
+                            setTimeout(() => {
+                                alert_send.style.display = 'none';
+                                alert_send.remove();
+            
+                                websocket.send(JSON.stringify({
+                                    'message' : mensaje.value,
+                                    'id_archivo' : data.id
+                                }));
+            
+                                archivo.value = '';
+                                archivo.disabled = false;
+                                bajar_sroll();
+                            }, 1000);
+                            
+                        }, 2000);
+                    }
 
-                            // Acciones que se podrían agregar si el envío multimedia es aceptado.
-                            websocket.send(JSON.stringify({
-                                'message' : mensaje.value,
-                                'id_archivo' : data.id
-                            }));
-                        }, 1000);
-                    }, 2000);
-                    archivo.value = '';
-                    archivo.disabled = false;
-                    bajar_sroll();                    
+                    try {
+                        mostrar_multimedia();
+
+                    } catch (error) {
+                        ventana.innerHTML += `
+                        <div id="send_notification">
+                            <div class="alert alert-warning center" style="display: flex; justify-content:center;">
+                                <p class="m-0">Tu archivo se está enviando</p>
+                            </div>
+                        </div>
+                        `;
+                        mostrar_multimedia();
+                    }
                 })
                 .catch(error => {
                     alert_send.remove();
@@ -472,6 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cambia el diseño del botón de envío de archivos, habilita o desabilita según lo establecido.
     function reiniciar_multimedia() {
         mensaje.value = '';
+        posicion = 0;
         compartir.innerHTML = '<i class="bi bi-folder-fill"></i> Archivo';
         mensaje.disabled = false;
         multimedia = '';
@@ -503,3 +574,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }  
 });
+
+// Por Adrián (Perdón por el código espaguetti xd).

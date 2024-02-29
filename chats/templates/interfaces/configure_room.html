@@ -24,10 +24,14 @@
     <br>
     {% if message %}
         <div class="alert alert-danger">
-            <h5>{{ message }}</h5>
+            <h4>Error: </h4>
+            <p>{{ message }}</p>
         </div>
     {% endif %}
     <h1>{{ room.nombre }}</h1>
+    <hr>
+    <p>Código de sala: {{ room.codigo }}</p>
+    <p>ID de sala: {{ room.id }}</p>
 
     {% if not room.password and editar %}
         <div class="alert alert-warning">
@@ -39,6 +43,10 @@
     {% if editar %}
         <form action="{% url 'edit' id=room.id %}" method="post">
             {% csrf_token %}
+            <br>
+            <h5>Nombre de la sala</h5>
+            <br>
+            <input type="text" class="col-8 form-control" placeholder="Nombre de la sala" name="nombre" value="{{ room.nombre }}">
             <br>
             <h5>URL de imagen</h5>
             <br>

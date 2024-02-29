@@ -7,6 +7,12 @@
 
 {% block content %}
 
+<style>
+    code {
+        color: salmon;
+    }
+</style>
+
 {% if user.is_authenticated %}
 
     {% include 'components/loggedinnav.html' %}
@@ -32,9 +38,11 @@
         <h4>Puedes usar cualquiera de las siguientes cuentas (Usuario / Contraseña):</h4>
         <hr>
         <ul>
-            <li>Frío | ADMIN</li>
-            <li>Cordelius | ADMIN</li>
-            <li>Tesla | ADMIN</li>
+            <li>Mico | AWESOME2.E!</li>
+            <li>Cordelius | AWESOME2.E!</li>
+            <li>Crow | AWESOME2.E!</li>
+            <li>Spike | AWESOME2.E!</li>
+            <li>Chester | AWESOME2.E!</li>
         </ul>
         <p>La contraseña de las salas creadas por el usuario EchoBot es: ATP2.0E</p>
     </div>
@@ -48,6 +56,80 @@
 
         <br>
         {% include 'components/main_update.html' %}
+    </div>
+    <br>
+    <div class="container border p-4">
+        <h3>Markdown Regular</h3>
+        <hr>
+        <p>Esta herramienta convierte expresiones Markdown a su equivalente en HTML, permitiendo establecer propiedades como tamaño, color, fondo y fuente en etiquetas de texto.</p>
+        <br>
+        <h3 id="etiq">Etiquetas</h3>
+        <hr>
+        <p>Puedes utilizar todas las etiquetas de HTML para personalizar tus textos.</p>
+        <h4>Sintaxis de las etiquetas</h4>
+        <p>Las etiquetas se delimitan con el uso de paréntesis. Antes de nombrar una etiqueta, es necesario utilizar el comando /rmd.</p>
+        <p>Para llamar a una etiqueta, primero abrir y cerrar paréntesis '()', luego colocar un par de corchetes al final '[]', entre estos estarán ubicadas las <a href="#props">propiedades</a>. Aunque no se establezcan propiedades, siempre es necesario colocar dichos corchetes. Dentro de los paréntesis se pueden agregar la cantidad de etiquetas deseadas, sin embargo, estas etiquetas heredarán siempre el estilo asignado en las propiedades.</p>
+        <code>(etiqueta1(contenido) etiqueta2(contenido))[]</code>
+        <br>
+        <br>
+        <div class="container border p-4">
+            <h4>Ejemplos de uso</h4>
+            <hr>
+            <p>Si se desea mostrar un texto similar al siguiente dentro del chat:</p>
+            <h1>Hello Echo</h1>
+            <p>Puede hacerlo de la siguiente manera:</p>
+            <code>
+                /rmd (h1(Hello Echo))[]
+            </code>
+            <p>Si se desea mostrar una lista similar al siguiente dentro del chat:</p>
+            <ul>
+                <li>Elemento 1</li>
+                <li>Elemento 2</li>
+                <li>Elemento 3</li>
+            </ul>
+            <p>Puede hacerlo de la siguiente manera:</p>
+            <code>
+                /rmd (ul(li(Elemento 1) li(Elemento 2) li(Elemento 3)))[]
+            </code>
+            <br>
+            <br>
+            <p>Puedes investigar más información acerca de las etiquetas HTML en la <a href="https://lenguajehtml.com/html/">documentación oficial.</a></p>
+        
+        </div>
+        <br>
+        <h3 id="props">Propiedades</h3>
+        <hr>
+        <p>Actualmente, esta sintaxis permite el uso de cuatro propiedades para dar estilo a tus mensajes. Estas son:</p>
+        <ul>
+            <li>col: Recibe un color directamente por su nombre en inglés (red, green, blue...), rgb, hexadecimal y rgba no están disponibles actualmente.</li>
+            <li>bgc: Al igual que la propiedad anterior, establece un color, solo que este será para el fondo del texto (resaltado en otras palabras).</li>
+            <li>siz: Siz establecerá un tamaño en unidades de píxeles a tu texto. Deberás ingresar un número entero.</li>
+            <li>fon: Establecerá la tipografía en la que quieras que se muestre tu texto. La correcta renderización dependerá de tu navegador.</li>
+        </ul>
+        <p>Cada etiqueta podrá utilizar como máximo una propiedad diferente. En otras palabras, no puedes agregar dos veces la propiedad col en un texto.</p>
+        <h4>Sintaxis de las propiedades</h4>
+        <p>Las propiedades siempre estarán ubicadas en el interior de dos corchetes, a la par del paréntesis (representantes de <a href="#etiq">etiquetas</a>) con el que se cierra una etiqueta:</p>
+        <code>(etiqueta(contenido))[col='color de preferencia', bgc='color de preferencia', siz='tamaño de preferencia', fon='fuente de preferencia']</code>
+        <br>
+        <br>
+        
+        <div class="container border p-4">
+            <h4>Ejemplos de uso</h4>
+            <hr>
+            <p>Si se desea mostrar un texto similar al siguiente dentro del chat:</p>
+            <h1 style="color: indigo; font-size: 30px">Hello Echo</h1>
+            <p>Puede hacerlo de la siguiente manera:</p>
+            <code>
+                /rmd (h1(Hello Echo))[col=indigo, siz=30]
+            </code>
+            <br>
+            <p>Si se desea mostrar un texto similar al siguiente dentro del chat:</p>
+            <p style="background-color: lightgreen; font-family: sans-serif;">Esto es un texto resaltado</p>
+            <p>Puede hacerlo de la siguiente manera:</p>
+            <code>
+                /rmd (p(Esto es un texto resaltado))[col=lightgreen, fon=sans-serif]
+            </code>
+        </div>
     </div>
 
     <br>
@@ -99,7 +181,7 @@
         <div class="row">
             <div class="col-md-3">
                 <div class="feature">
-                    <img src="https://lh3.googleusercontent.com/proxy/N8kl_apPMs1RmJ7khZXSqCP0NazNR0o92FsfK9UrWYc5B1hCzsiuyh1GR13OfeuRic-e01y1VitVOzxvTLLOqkaLZUrR4MdrOSCuVmh3U4cm7jpI-A" alt="Canal Personalizado" class="m-2 img-fluid rounded-circle">
+                    <img src="https://static-00.iconduck.com/assets.00/jquery-icon-505x512-u4lk43ex.png" alt="Canal Personalizado" class="m-2 img-fluid rounded-circle">
                     <br>
                     <h2>Ajax - Jquery</h2>
                     <hr>
@@ -151,6 +233,7 @@
         <ul>
             <li>/eb - Utiliza la inteligencia artificial integrada. Esta toma la información de la API de <a href="https://openai.com/">OpenAI</a>.</li>
             <li>/md - Envía mensajes en formato de Markdown.</li>
+            <li>/rmd - Envía mensajes con estilos CSS en etiquetas HTML dentro de los contenedores Markdown.</li>
         </ul>
 
         <br>

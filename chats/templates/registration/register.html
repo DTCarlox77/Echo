@@ -25,6 +25,8 @@
             {% csrf_token %}
             <input type="text" name="username" id="" class="form-control" placeholder="Nombre de usuario" value="{% if respaldo.username %}{{ respaldo.username }}{% endif %}">
             <br>
+            <input type="email" name="email" id="" class="form-control" placeholder="Correo electrónico" value="{% if respaldo.email %}{{ respaldo.email }}{% endif %}">
+            <br>
             <input type="password" name="password" class="form-control" placeholder="Contraseña" value="{% if respaldo.password %}{{ respaldo.password }}{% endif %}">
             <br>
             <input type="text" name="imagen" id="" class="form-control" placeholder="URL de imagen" value="{% if respaldo.image %}{{ respaldo.image }}{% endif %}">

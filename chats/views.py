@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 import re
 
 from .models import CustomUser, Salas, SalasUsuarios, Mensajes
+from .code import generar_codigo
 
 salas_cargadas = 5
 
@@ -29,11 +30,13 @@ def register_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        email = request.POST.get('email')
         image = request.POST.get('imagen')
         
         respaldo = {
             'username' : username,
             'password' : password,
+            'email' : email,
             'image' : image
         }
         
@@ -48,7 +51,7 @@ def register_view(request):
             else:    
                 
                 try:
-                    user = CustomUser.objects.create_user(username=username, password=password, image=(image if image else 'https://cdn0.iconfinder.com/data/icons/unigrid-flat-human-vol-2/90/011_101_anonymous_anonym_hacker_vendetta_user_human_avatar-512.png'))
+                    user = CustomUser.objects.create_user(username=username, password=password, email=email, image=(image if image else 'https://cdn0.iconfinder.com/data/icons/unigrid-flat-human-vol-2/90/011_101_anonymous_anonym_hacker_vendetta_user_human_avatar-512.png'))
                     user.save()
                     return redirect('login')
                 
@@ -139,29 +142,27 @@ def create_room(request):
         }
         
         if nombre:
-            salas = Salas.objects.filter(nombre=nombre).count()
-            if salas == 0:
-                patron = r'^[a-zA-Z0-9\s]+$'
+
+            patron = r'^[a-zA-Z0-9\s]+$'
                 
-                if len(nombre) > 10:
-                    message = 'El nombre de la sala es demasiado largo.'
+            if len(nombre) > 15:
+                message = 'El nombre de la sala es demasiado largo.'
                 
-                elif not re.match(patron, nombre):
-                    message = 'No se permite el uso de carácteres no alfanuméricos para nombrar una sala.'
+            elif not re.match(patron, nombre):
+                message = 'No se permite el uso de carácteres no alfanuméricos para nombrar una sala.'
                     
-                else:
-                    try:
-                        nueva_sala = Salas(nombre=nombre, descripcion=(descripcion if descripcion else 'Sin descripción.'), password=(password if password else None), creador=request.user, imagen=(imagen if imagen else 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg'))
-                        nueva_sala.save()
-                        
-                        unir = SalasUsuarios(usuario=request.user, sala=nueva_sala)
-                        unir.save()
-                        return redirect('rooms')
-                        
-                    except Exception as e:
-                        message = f'Algo salió mal: {e}'
             else:
-                message = 'El nombre no se encuentra disponible.'
+                try:
+                    nueva_sala = Salas(nombre=nombre, codigo=generar_codigo(), descripcion=(descripcion if descripcion else 'Sin descripción.'), password=(password if password else None), creador=request.user, imagen=(imagen if imagen else 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg'))
+                    nueva_sala.save()
+                        
+                    unir = SalasUsuarios(usuario=request.user, sala=nueva_sala)
+                    unir.save()
+                    return redirect('rooms')
+                        
+                except Exception as e:
+                    message = f'Algo salió mal: {e}'
+                    
         else:
             message = 'La sala necesita de un nombre.'
     
@@ -176,6 +177,7 @@ def edit_room(request, id):
     message = ''
     relacion = SalasUsuarios.objects.filter(sala=id)
     members = [member.usuario for member in relacion]
+    respaldo = ''
     
     if room.creador != request.user:
         return render(request, 'interfaces/configure_room.html', {
@@ -186,20 +188,35 @@ def edit_room(request, id):
         })
         
     if request.method == 'POST':
+        nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
         password = request.POST.get('password')
         imagen = request.POST.get('imagen')
         
-        try:
-            room.descripcion = (descripcion if descripcion else 'Sin descripción.')
-            room.password = (password if password else None)
-            room.imagen = (imagen if imagen else 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg')
-            room.save()
-                    
-            return redirect('edit', id=room.id)
-                    
-        except Exception as e:
-            message = f'Algo salió mal: {e}'
+        if nombre:
+            patron = r'^[a-zA-Z0-9\s]+$'
+                
+            if len(nombre) > 15:
+                message = 'El nombre de la sala es demasiado largo.'
+                
+            elif not re.match(patron, nombre):
+                message = 'No se permite el uso de carácteres no alfanuméricos para nombrar una sala.'
+                
+            else:
+                try:
+                    room.nombre = nombre
+                    room.descripcion = (descripcion if descripcion else 'Sin descripción.')
+                    room.password = (password if password else None)
+                    room.imagen = (imagen if imagen else 'https://www.shutterstock.com/image-vector/default-image-icon-vector-missing-600nw-2079504220.jpg')
+                    room.save()
+                            
+                    return redirect('edit', id=room.id)
+                            
+                except Exception as e:
+                    message = f'Algo salió mal: {e}'
+
+        else:
+            message = 'La sala necesita un nombre.'
 
     return render(request, 'interfaces/configure_room.html', {
         'room' : room,
@@ -340,7 +357,7 @@ def load_rooms(request):
 
     if offset:
         salas_adicionales = Salas.objects.all().order_by('fecha').reverse()[offset:offset+salas_cargadas]
-        salas_html = render_to_string('interfaces/rooms_shortcut.html', {'rooms': salas_adicionales, 'public': True})
+        salas_html = render_to_string('components/room_entrance.html', {'rooms': salas_adicionales, 'public': True})
 
         return JsonResponse({
             'salas_html': salas_html
@@ -349,23 +366,34 @@ def load_rooms(request):
     return JsonResponse({
         'message': 'No se proporcionó un valor de offset válido.'
     })
-
+    
 def search_view(request):
     busqueda = request.GET.get('busqueda', '')
     
     if busqueda:
-        salas_buscadas = Salas.objects.filter(nombre__contains=busqueda)
-        
-        if salas_buscadas:
-            salas_html = render_to_string('interfaces/rooms_shortcut.html', {'rooms': salas_buscadas, 'public': True})
+
+        # Búsqueda de una sola sala por código.
+        sala_buscada = Salas.objects.filter(codigo=busqueda)
+            
+        if sala_buscada.exists():
+            sala_html = render_to_string('components/room_entrance.html', {'rooms': sala_buscada, 'public': True})
             return JsonResponse({
-                'salas_html': salas_html
+                    'salas_html': sala_html
             })
         else:
-            return JsonResponse({
-                'message': 'No se encontraron salas.'
-            })
-
+            # Búsqueda de similitudes por nombre.
+            salas_buscadas = Salas.objects.filter(nombre__contains=busqueda)
+                
+            if salas_buscadas:
+                salas_html = render_to_string('components/room_entrance.html', {'rooms': salas_buscadas, 'public':True})
+                return JsonResponse({
+                    'salas_html': salas_html
+                })
+            else:
+                return JsonResponse({
+                    'message': 'No se encontraron salas.'
+                })
+        
 def cancel_search(request):
     rooms = Salas.objects.all().order_by('fecha').reverse()[:salas_cargadas]
     
