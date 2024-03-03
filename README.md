@@ -1,4 +1,4 @@
-# Proyecto 5: Echo (Capstone)
+# Project 5: Echo (Capstone)
 
 ¡Bienvenido a Echo! Aquí tienes una descripción general del proyecto, la lista de archivos y las instrucciones para ejecutar la aplicación en tu entorno local.
 
