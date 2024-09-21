@@ -11,13 +11,9 @@ import mimetypes
 import os
 import markdown
 from . import regularmarkdown
+import httpx
 
 load_dotenv()
-
-# Instancia a la clase de openai.
-client = OpenAI(
-    api_key=getenv('OPENAI_KEY'),
-)
 
 # Consumidor de chats para el websocket.
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -99,17 +95,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         
                         try:
                             
-                            chat_completion = client.chat.completions.create(
-                                messages = [
-                                    {
-                                        'role' : 'user',
-                                        'content' : message,
+                            async with httpx.AsyncClient() as client:
+                                
+                                response = await client.post(
+                                    getenv('OPENAI_URL'),
+                                    headers = {
+                                        'Authorization': f"Bearer {getenv('OPENAI_KEY')}",
+                                        'Content-Type': 'application/json',
+                                    },
+                                    json = {
+                                        'model': getenv('OPENAI_ENGINE'),
+                                        'messages': [
+                                            {
+                                                'role': 'user',
+                                                'content': message
+                                            }
+                                        ]
                                     }
-                                ],
-                                model = getenv('OPENAI_ENGINE'),
-                            )
-                            
-                            chat_message = chat_completion.choices[0].message.content
+                                )
+                                
+                            # Procesamiento de la respuesta de OpenAI.
+                            chat_completion = response.json()
+                            print(chat_completion)
+                            chat_message = chat_completion['choices'][0]['message']['content']
                             format_message = f'/EB:CODE:18-Respuesta de EchoBot: {chat_message}'
                             
                             await self.channel_layer.group_send(
@@ -128,12 +136,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             await self.guardar_mensaje(format_message)   
                         
                         except Exception as e:
+                            print(f'Error en la consulta a OpenAI: {e}')
                             
                             await self.channel_layer.group_send(
                                 self.room_group_name,
                                 {
                                     'type': 'chat_message',
-                                    'message': f'/md <p>Error de conexión con OpenAI.</p><br><code>{e}</code>',
+                                    'message': f'/md <p>Error de conexión con OpenAI.</p><br><code>EchoBot no se encuentra disponible.</code>',
                                     'username': 'EchoBot',
                                     'userimage' : 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg',
                                     'fecha' : datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
@@ -333,7 +342,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 userimage = mensaje['emisor__image']
                 markdown_validation = False
                 
-                if message.lower().startswith('/EB:CODE:18-Respuesta de EchoBot:'):
+                if message.startswith('/EB:CODE:18-Respuesta de EchoBot:'):
                     username = 'Echobot'
                     userimage = 'https://piks.eldesmarque.com/thumbs/660/bin/2024/01/11/kit.jpg'
                     message = markdown.markdown(message[34:])

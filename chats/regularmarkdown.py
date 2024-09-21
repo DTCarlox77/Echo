@@ -36,6 +36,16 @@ def procesar_expresion(expresion):
                 propiedad = 'color'
             elif propiedad == 'siz':
                 propiedad = 'font-size'
+                
+                try:
+                    valor = int(valor)
+                    valor = abs(valor)
+                    valor = 100 if valor > 100 else valor
+                
+                except:
+                    valor = 50
+                
+                valor = str(valor)
                 valor += 'px'
             elif propiedad == 'fon':
                 propiedad = 'font-family'
