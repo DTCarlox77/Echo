@@ -91,6 +91,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     await self.guardar_mensaje(message)
                     
                     # Uso de la IA con la api de OpenAI, en las variables de entorno se establecen sus parámetros.
+                    print(getenv('OPENAI_KEY'))
                     if changed_message.startswith('/eb') and (str(getenv('OPENAI_ACTIVE')) == 'True'): 
                         
                         try:
@@ -131,7 +132,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                     'id_archivo' : None,
                                 }
                             )
-                            
+                            print(format_message)
                             # Almacena el mensaje en la base de datos.
                             await self.guardar_mensaje(format_message)   
                         

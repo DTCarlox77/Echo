@@ -14,6 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Conexión con el websocket establecida.');
     };
 
+    /* 
+    websocket.send(JSON.stringify({
+        'data_'type' : 'message',
+        'message' : 'Hola, soy un mensaje.'
+    }));
+    
+    */
+
     websocket.onclose = (e) => {
         console.error('La conexión con el websocket ha sido cerrada.');
     };
